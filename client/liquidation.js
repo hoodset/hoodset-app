@@ -143,5 +143,5 @@ export function createLiquidation(d){
     if(storageError)return '';const p=runs().findLast(p=>!p.archived&&p.account===state.account);if(!p||tracker.cache.get(p.id)?.done)return '';
     return `<section class="funding-resume"><div><small>BASKET SALE IN PROGRESS</small><b>${esc(state.vaults[p.vault]?.name||short(p.vault))}</b><p>Resume the verified redemption and remaining component sales.</p></div><a class="btn primary" href="#exit/${p.vault}">RESUME SALE</a></section>`;
   }
-  return {async refreshReview(recovery){const p=byId(recovery.exit);if(!p||p.account!==state.account)throw Error('The saved operation is no longer available.');await next(p.vault);},page,action,input,reconcile,resumePanel,beforeSend,sending:tracker.sending,submitted:tracker.submitted,rejected:tracker.rejected,recover:tracker.recover,busy:()=>view.busy};
+  return {async refreshReview(recovery){const p=byId(recovery.exit);if(!p||p.account!==state.account)throw Error('The saved operation is no longer available.');const v=await loadVault(p.vault);await d.refreshMarks(v.symbols);await next(p.vault);},page,action,input,reconcile,resumePanel,beforeSend,sending:tracker.sending,submitted:tracker.submitted,rejected:tracker.rejected,recover:tracker.recover,busy:()=>view.busy};
 }
