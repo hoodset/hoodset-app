@@ -2,6 +2,9 @@
 export const HISTORY_SOURCE='DoltHub / post-no-preference/stocks';
 export const HISTORY_URL='https://www.dolthub.com/repositories/post-no-preference/stocks';
 const DAY=86400000,SCALE=10n**18n;
+// Round displayed percentages to the nearest basis point, symmetrically for losses.
+// Truncation can disagree with the same path's two-decimal $100 ending value.
+const basisPoints=(numerator,denominator)=>{const scaled=numerator*10000n,sign=scaled<0n?-1n:1n;return Number(sign*((sign*scaled+denominator/2n)/denominator));};
 export function isoDay(at=Date.now()){return new Date(at).toISOString().slice(0,10);}
 export function nyDay(at=Date.now()){
   const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(at);
@@ -60,9 +63,9 @@ export function historicalBasket(theme,history,period='1Y',now=Date.now()){
   try{
     const bases=maps.map(m=>close18(m.get(start)));
     const points=calendar.map(date=>({date,at:Date.parse(date+'T12:00:00Z'),value:String(maps.reduce((total,m,i)=>total+100n*SCALE*BigInt(bps[i])*close18(m.get(date))/(10000n*bases[i]),0n))}));
-    const first=BigInt(points[0].value),last=BigInt(points.at(-1).value);let peak=first,drawdown=0n;
-    for(const p of points){const v=BigInt(p.value);if(v>peak)peak=v;const dd=(peak-v)*10000n/peak;if(dd>drawdown)drawdown=dd;}
-    return {ready:true,start:points[0].at,end:points.at(-1).at,startDate:start,endDate:end,count:points.length,points,returnBps:Number((last-first)*10000n/first),drawdownBps:Number(drawdown),endValue:last,window:period+':'+start+':'+end,source:history.provider||HISTORY_SOURCE};
+    const first=BigInt(points[0].value),last=BigInt(points.at(-1).value);let peak=first,drawdown=0;
+    for(const p of points){const v=BigInt(p.value);if(v>peak)peak=v;const dd=basisPoints(peak-v,peak);if(dd>drawdown)drawdown=dd;}
+    return {ready:true,start:points[0].at,end:points.at(-1).at,startDate:start,endDate:end,count:points.length,points,returnBps:basisPoints(last-first,first),drawdownBps:drawdown,endValue:last,window:period+':'+start+':'+end,source:history.provider||HISTORY_SOURCE};
   }catch{return empty('A component contains an invalid historical close.');}
 }
 export function compareHistorical(a,b,direction='desc'){
@@ -71,4 +74,22 @@ export function compareHistorical(a,b,direction='desc'){
   // All app rows use the same SPY calendar. Refuse a mixed-window comparison.
   if(a.window!==b.window)return 0;
   return direction==='asc'?a.returnBps-b.returnBps:b.returnBps-a.returnBps;
+}
+
+// The benchmark uses every date in the basket's completed-session window.
+// Neither side gets a different start, skipped sessions or a live price splice.
+export function historicalComparison(theme,history,period='1Y',now=Date.now()){
+  const basket=historicalBasket(theme,history,period,now);
+  const unavailable=reason=>({ready:false,reason,basket,benchmark:null,differenceBps:null});
+  if(!basket.ready)return unavailable(basket.reason);
+  try{
+    const closes=new Map((history.series?.SPY?.points||[]).map(p=>[p.date,p.close]));
+    const base=close18(closes.get(basket.startDate));
+    const points=basket.points.map(p=>({date:p.date,at:p.at,value:String(100n*SCALE*close18(closes.get(p.date))/base)}));
+    const first=BigInt(points[0].value),last=BigInt(points.at(-1).value);
+    let peak=first,drawdown=0;
+    for(const p of points){const value=BigInt(p.value);if(value>peak)peak=value;const dd=basisPoints(peak-value,peak);if(dd>drawdown)drawdown=dd;}
+    const benchmark={...basket,points,returnBps:basisPoints(last-first,first),drawdownBps:drawdown,endValue:last,symbol:'SPY'};
+    return {ready:true,basket,benchmark,differenceBps:basket.returnBps-benchmark.returnBps};
+  }catch{return unavailable('SPY has a missing or invalid close in the selected period.');}
 }

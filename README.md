@@ -159,6 +159,14 @@ Buy preview distributes an exact reference USDG budget using component ask costs
 The release adds 11 pure-logic tests (45 total) covering exact normalization, component bounds, invalid drafts, history identity, period completeness, stale/missing marks, sample retention and spread-aware budget estimates. Browser checks cover saved edits, invalid totals, 2/12-token limits, builder handoff/restoration and mobile layouts. No financial transaction was sent for this update.
 
 
+### Basket versus SPY, version 2.14
+
+Basket Radar's historical view compares the selected mix with the SPY ETF price benchmark over identical completed sessions. Both start at $100. The view shows the two price paths, each price return and maximum daily-close drawdown, their ending values, and the basket-minus-SPY return difference in percentage points. Editing the composition recalculates the comparison; it does not modify a deployed vault.
+
+The benchmark uses the same start, end and every session as the basket. Missing or invalid benchmark prices leave the comparison unavailable; missing components block the whole basket calculation. Daily-close maximum drawdown is the largest decline from a prior peak within the selected window, not an intraday worst loss. Cash dividends, gas, execution costs and RH multiplier effects are excluded. This price-only calculation differs from SPY's published total return and is not an issued vault's track record, a forecast or a claim of risk-adjusted alpha. Wallet execution and all contracts are unchanged.
+
+Definitions: [SPY issuer](https://www.ssga.com/us/en/institutional/etfs/state-street-spdr-sp-500-etf-trust-spy), [maximum drawdown](https://www.mathworks.com/help/finance/maxdrawdown.html).
+
 ### Historical price returns, version 2.5
 
 `/api/history` reads Twelve Data `/time_series` for the 17 pinned underlying US symbols. Configure `TWELVE_DATA_API_KEY` as a **secret** runtime environment variable in Sites and deploy the saved version to apply it. Locally, copy `.env.example` to untracked `.env` and start `npm run dev`. The key is sent only in the provider Authorization header, never to the browser, URLs or archives. Missing keys and the public `demo` key remain unconfigured. Provider authorization failures, missing entitlements, malformed replies and quotas are explicit errors; no alternate service or fabricated dataset is substituted.

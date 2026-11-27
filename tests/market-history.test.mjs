@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {normalizeHistory,historicalBasket,compareHistorical,isoDay,nyDay} from '../shared/market-history.js';
+import {normalizeHistory,historicalBasket,historicalComparison,compareHistorical,isoDay,nyDay} from '../shared/market-history.js';
 import {localD1} from '../scripts/local-d1.mjs';
 import {createHistoryService} from '../worker/history.js';
 const now=Date.parse('2026-11-26T22:00:00Z');
@@ -8,6 +8,49 @@ const dates=[];for(let at=Date.parse('2025-04-01');at<=Date.parse('2026-11-25');
 const provider=(symbol,rows=dates.map(datetime=>({datetime,close:'100'})))=>({status:'ok',meta:{symbol,interval:'1day',currency:'USD',exchange_timezone:'America/New_York'},values:rows});
 function fixture(){const series={};for(const symbol of ['SPY','AAPL','NVDA'])series[symbol]=normalizeHistory(symbol,provider(symbol),now);const a=series.AAPL.points,b=series.NVDA.points;a.at(-1).close='200';b.at(-1).close='50';return{configured:true,series};}
 const theme={assets:['AAPL','NVDA'],weights:[50,50]};
+
+test('SPY comparison aligns both paths and calculates return difference and close-to-close drawdown',()=>{
+  const h=fixture();h.series.SPY.points.at(-1).close='120';
+  h.series.SPY.points.find(p=>p.date==='2026-06-01').close='150';
+  const before=JSON.stringify(h),r=historicalComparison(theme,h,'1Y',now);
+  assert.equal(r.ready,true);assert.equal(r.basket.returnBps,2500);assert.equal(r.benchmark.returnBps,2000);assert.equal(r.differenceBps,500);
+  assert.equal(r.benchmark.drawdownBps,3333);assert.equal(r.benchmark.endValue,120n*10n**18n);
+  assert.equal(r.benchmark.window,r.basket.window);assert.equal(r.benchmark.count,r.basket.count);
+  assert.deepEqual(r.benchmark.points.map(p=>[p.date,p.at]),r.basket.points.map(p=>[p.date,p.at]));
+  assert.equal(JSON.stringify(h),before);
+});
+test('benchmark resets its peak at the selected start and uses identical daily and monthly sessions',()=>{
+  const h=fixture();h.series.SPY.points.find(p=>p.date==='2025-09-01').close='1000';
+  h.series.SPY.points.at(-1).close='120';
+  for(const period of ['1D','1M','1Y']){
+    const r=historicalComparison(theme,h,period,now);
+    assert.equal(r.ready,true);assert.equal(r.benchmark.drawdownBps,0);
+    assert.equal(r.benchmark.startDate,r.basket.startDate);assert.equal(r.benchmark.endDate,r.basket.endDate);
+    assert.equal(r.benchmark.points[0].value,String(100n*10n**18n));
+  }
+});
+test('an invalid benchmark close never produces an excess-return figure or drops the bad session',()=>{
+  for(const day of ['2025-11-25','2026-06-01','2026-11-25']){
+    const h=fixture();h.series.SPY.points.find(p=>p.date===day).close='invalid';
+    const r=historicalComparison(theme,h,'1Y',now);
+    assert.equal(r.ready,false);assert.equal(r.basket.ready,true);assert.equal(r.benchmark,null);assert.equal(r.differenceBps,null);assert.match(r.reason,/SPY/);
+  }
+});
+test('missing component history blocks the complete comparison and negative excess stays negative',()=>{
+  const h=fixture();delete h.series.NVDA;
+  const missing=historicalComparison(theme,h,'1Y',now);
+  assert.equal(missing.ready,false);assert.equal(missing.differenceBps,null);assert.equal(missing.benchmark,null);
+  const losing=fixture();losing.series.AAPL.points.at(-1).close='50';losing.series.SPY.points.at(-1).close='120';
+  const r=historicalComparison(theme,losing,'1Y',now);
+  assert.equal(r.basket.returnBps,-5000);assert.equal(r.benchmark.returnBps,2000);assert.equal(r.differenceBps,-7000);
+});
+test('displayed historical percentages round consistently with the $100 path for gains and losses',()=>{
+  for(const [close,expected] of [['100.006',1],['99.994',-1]]){
+    const h=fixture();for(const symbol of ['AAPL','NVDA','SPY'])h.series[symbol].points.at(-1).close=close;
+    const r=historicalComparison(theme,h,'1Y',now);
+    assert.equal(r.basket.returnBps,expected);assert.equal(r.benchmark.returnBps,expected);assert.equal(r.differenceBps,0);
+  }
+});
 
 test('an API key alone cannot expose historical data, cached series or use provider credits',async()=>{
   let providerCalls=0,cacheReads=0;
