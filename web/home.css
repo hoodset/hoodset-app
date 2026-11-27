@@ -39,3 +39,5 @@
 .vault-unfunded ol{padding-left:19px;margin:14px 0}
 .vault-unfunded li+li{margin-top:7px}
 .vault-unfunded small{font:400 12px/1.5 var(--font-ui);color:#78836c}
+
+.history-attribution{border-top:1px solid #c5c8ba;padding:18px 0;font:400 14px/1.6 var(--font-ui);color:#69715f;overflow-wrap:anywhere}.history-attribution a{color:#7851a6;text-underline-offset:3px}

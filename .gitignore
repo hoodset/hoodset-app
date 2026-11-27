@@ -16,3 +16,4 @@ artifacts/
 node_modules/
 live-research/
 .cache/
+.vercel/

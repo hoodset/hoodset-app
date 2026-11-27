@@ -1,5 +1,6 @@
 import {ALLOWED} from './assets.js';
-import {HISTORY_SOURCE,HISTORY_URL,normalizeHistory,nyDay} from '../shared/market-history.js';
+import {normalizeHistory,nyDay} from '../shared/market-history.js';
+const HISTORY_SOURCE='Twelve Data',HISTORY_URL='https://twelvedata.com/docs/market-data/time-series';
 const TTL=6*3600000,VERSION=2;
 export const historyDisplayAllowed=env=>env?.TWELVE_DATA_DISPLAY_RIGHTS==='external-display';
 const waiting=(message,stop=false)=>Object.assign(Error(message),{pending:true,stop});

@@ -1,6 +1,6 @@
 // Daily underlying-equity prices are independent of live RH token valuations.
-export const HISTORY_SOURCE='Twelve Data';
-export const HISTORY_URL='https://twelvedata.com/docs/market-data/time-series';
+export const HISTORY_SOURCE='DoltHub / post-no-preference/stocks';
+export const HISTORY_URL='https://www.dolthub.com/repositories/post-no-preference/stocks';
 const DAY=86400000,SCALE=10n**18n;
 export function isoDay(at=Date.now()){return new Date(at).toISOString().slice(0,10);}
 export function nyDay(at=Date.now()){
@@ -10,7 +10,7 @@ export function nyDay(at=Date.now()){
 }
 export function validDay(s){return typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&Number.isFinite(Date.parse(s))&&isoDay(Date.parse(s))===s;}
 export function close18(s){
-  if(typeof s!=='string'||! /^(0|[1-9]\d{0,9})(\.\d{1,11})?$/.test(s))throw Error('Invalid daily close.');
+  if(typeof s!=='string'||! /^(0|[1-9]\d{0,9})(\.\d{1,18})?$/.test(s))throw Error('Invalid daily close.');
   const [whole,fraction='']=s.split('.'),value=BigInt(whole)*SCALE+BigInt(fraction.padEnd(18,'0'));
   if(value<=0n)throw Error('Daily close must be positive.');return value;
 }
@@ -62,7 +62,7 @@ export function historicalBasket(theme,history,period='1Y',now=Date.now()){
     const points=calendar.map(date=>({date,at:Date.parse(date+'T12:00:00Z'),value:String(maps.reduce((total,m,i)=>total+100n*SCALE*BigInt(bps[i])*close18(m.get(date))/(10000n*bases[i]),0n))}));
     const first=BigInt(points[0].value),last=BigInt(points.at(-1).value);let peak=first,drawdown=0n;
     for(const p of points){const v=BigInt(p.value);if(v>peak)peak=v;const dd=(peak-v)*10000n/peak;if(dd>drawdown)drawdown=dd;}
-    return {ready:true,start:points[0].at,end:points.at(-1).at,startDate:start,endDate:end,count:points.length,points,returnBps:Number((last-first)*10000n/first),drawdownBps:Number(drawdown),endValue:last,window:period+':'+start+':'+end,source:HISTORY_SOURCE};
+    return {ready:true,start:points[0].at,end:points.at(-1).at,startDate:start,endDate:end,count:points.length,points,returnBps:Number((last-first)*10000n/first),drawdownBps:Number(drawdown),endValue:last,window:period+':'+start+':'+end,source:history.provider||HISTORY_SOURCE};
   }catch{return empty('A component contains an invalid historical close.');}
 }
 export function compareHistorical(a,b,direction='desc'){

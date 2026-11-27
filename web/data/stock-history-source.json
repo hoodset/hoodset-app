@@ -1,0 +1,12 @@
+{
+  "provider": "post-no-preference/stocks on DoltHub",
+  "author": "post-no-preference",
+  "sourceUrl": "https://www.dolthub.com/repositories/post-no-preference/stocks",
+  "sourceLicenseUrl": "https://www.dolthub.com/repositories/post-no-preference/stocks/doc/master/LICENSE.md",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "licenseText": "/data/LICENSE-stock-history.txt",
+  "changes": "Selection of 17 US instruments; date validation, split-only normalization, and fixed-quantity basket calculations by HOODSET. Data and adaptations remain CC BY-SA 4.0. No cash-dividend, fee, gas or RH multiplier adjustment.",
+  "disclaimer": "Community-maintained data, provided as is; neither DoltHub nor the dataset maintainer endorses HOODSET. This is underlying price history, not actual vault performance.",
+  "updates": "Dated real bootstrap, shared cache, incremental checks after six hours on use; source failures stay visible and stale/incomplete periods remain unranked."
+}

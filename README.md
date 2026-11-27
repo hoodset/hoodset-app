@@ -1,10 +1,25 @@
 # HOODSET
 
+## Current release: free history and Vercel (2.11)
+
+The primary deployment now targets a separate HOODSET project on Vercel. Earlier version sections below are a historical changelog; their Twelve Data and Sites setup instructions are superseded by this release. `npm run build:vercel` builds the same wallet interface into static CDN assets and Node.js API functions. Root HTML metadata follows the current host. Deploy from an explicitly linked HOODSET checkout; do not reuse another project's `.vercel` configuration. `RH_RPC_URL` is optional; the market-data integration needs no API key.
+
+`/api/history` uses the public `post-no-preference/stocks` DoltHub dataset, published under CC BY-SA 4.0. It contains dated daily US stock and ETF prices and separate split factors. The 17-instrument release includes a real verified bootstrap (283 daily closes per symbol, through November 25, 2026), not simulated bars. A shared regional Vercel Runtime Cache refreshes in bounded date batches after six hours of use. It is evictable and is used only for recomputable public history. An optional D1 adapter remains for local/Sites previews; no D1 or provider credentials are required by Vercel.
+
+Source dates are queried at a verified Dolt commit. The price API rejects truncated SQL responses, altered identity, duplicate/invalid prices, unknown splits and changed license text. Data for each queried date replaces old rows, including a successful empty correction. Date-level revision provenance remains available in the response. If refresh fails, the last dated source remains explicit; the existing common-calendar rules leave stale or incomplete annual periods unranked. No Twelve Data payload or key is used by the active route. The guarded older adapter remains regression coverage only.
+
+Raw closes are adjusted once by published `for_factor / to_factor` for splits after each bar. Cash dividends, gas, fees and RH multiplier effects are excluded. This is retrospective underlying-price return for today's mix, not an issued vault's past performance. Fixed quantities per share, executable quotes, approvals and wallet transaction checks are unchanged.
+
+Data, normalized history and adaptations remain CC BY-SA 4.0. Attribution, license, change notices and the source are linked near the charts and in Data & network. See `web/data/stock-history-source.json` and `web/data/LICENSE-stock-history.txt`. The upstream data is community-maintained, provided as is, and does not imply endorsement or an independently verified exchange data license chain.
+
+Sources: https://www.dolthub.com/repositories/post-no-preference/stocks ; https://www.dolthub.com/repositories/post-no-preference/stocks/doc/master/LICENSE.md ; https://creativecommons.org/licenses/by-sa/4.0/ .
+
+
 Noncustodial baskets of canonical RH Stock Tokens on Robinhood Chain (4663, ETH gas). OpenOcean public Swap API provides exact-input USDG buys and Stock Token sells without a 0x key. The previous paper experience remains separate at `/paper.html`.
 
 ## Build and preview
 
-Node 22.13+ and npm are required (local D1 preview/tests use built-in SQLite). Anvil is used only by the independent contract integration tests (set ANVIL_BIN if not on PATH; the local Foundry install is detected).
+Node 24.x and npm are required (local D1 preview/tests use built-in SQLite). Anvil is used only by the independent contract integration tests (set ANVIL_BIN if not on PATH; the local Foundry install is detected).
 
 ```sh
 npm ci

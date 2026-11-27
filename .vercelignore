@@ -1,0 +1,16 @@
+.vercel/
+.git/
+.openai/
+.local/
+.generated/
+node_modules/
+artifacts/
+live-research/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+registry-full.json
+design-notes.txt
+work-fonts.css

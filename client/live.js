@@ -163,9 +163,9 @@ function renderHistoryUpdate(){if(!document.activeElement?.closest('input,textar
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshOldHistory();});document.addEventListener('focusout',()=>{if(historyRenderPending)setTimeout(renderHistoryUpdate,0);});
 addEventListener('focus',refreshOldHistory);setInterval(refreshOldHistory,600000);
 async function loadMarketHistory(){
- if(state.historyLoading)return;if(Date.now()<state.historyRetryAt){notify('History provider limit: retry in '+Math.ceil((state.historyRetryAt-Date.now())/1000)+' seconds.');return;}clearTimeout(historyTimer);state.historyLoading=true;state.historyError='';
+ if(state.historyLoading)return;if(Date.now()<state.historyRetryAt){notify('History refresh: retry in '+Math.ceil((state.historyRetryAt-Date.now())/1000)+' seconds.');return;}clearTimeout(historyTimer);state.historyLoading=true;state.historyError='';
  try{const priority=[...new Set(['SPY',...radarTheme().assets,...Object.keys(ALLOWED)])];state.marketHistory=await api('history?symbols='+priority.join(','));state.historyRetryAt=state.marketHistory.retryAfter?Date.now()+state.marketHistory.retryAfter*1000:0;
- if(state.marketHistory.retryAfter&&historyAttempts++<4)historyTimer=setTimeout(loadMarketHistory,state.marketHistory.retryAfter*1000);else historyAttempts=0;
+ if(state.marketHistory.retryAfter&&historyAttempts++<8)historyTimer=setTimeout(loadMarketHistory,state.marketHistory.retryAfter*1000);else historyAttempts=0;
  }catch(e){state.historyError=fail(e);state.historyRetryAt=0;}
  state.historyLoading=false;renderHistoryUpdate();
 }
