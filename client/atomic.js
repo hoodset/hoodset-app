@@ -38,7 +38,7 @@ export function createAtomicBaskets(d){
  body+=`<div class="form-error" role="alert">${esc(w.error)}</div><p class="footnote">Initial permissions are separate. ${side==='buy'?'Component purchases and mint':'Redemption and all component sales'} then execute together. A failed component reverts the whole execution; gas can still be charged. Stock Tokens left over from a buy remain in your wallet.</p></section>`;
  return body;
  }
- async function context(a,side,w){await assertWallet();await noPending();const v=await loadVault(a);await loadBalances();const router=await verifyRouter(),address=await router.getAddress(),permissions=[];
+ async function context(a,side,w){await assertWallet();await noPending();const v=await loadVault(a);await loadBalances();await d.refreshMarks(v.symbols);const router=await verifyRouter(),address=await router.getAddress(),permissions=[];
   d.expirePrices();for(const s of v.symbols)if(!state.prices[s]?.ok)throw Error(s+': refresh current reference prices first.');
   if(side==='buy'){
    const progress=await funding.verifiedProgress(a);d.expirePrices();for(const s of v.symbols)if(!state.prices[s]?.ok)throw Error(s+': refresh current reference prices first.');
@@ -51,11 +51,11 @@ export function createAtomicBaskets(d){
   if(await d.vault(a).allowance(state.account,address)<shares)permissions.push({symbol:v.symbol,tokenAddress:a,amount:shares,decimals:18});
   return{v,router,address,shares,amounts,permissions,session:state.session,account:state.account};
  }
- async function quote(a,side,w){const c=await context(a,side,w);w.context=c;if(c.permissions.length)throw Error('Review the exact permissions before requesting the execution quote.');const quotes=[],routes=[];
-  for(let i=0;i<c.v.assets.length;i++){
-   const amount=side==='buy'?c.inputs.allocations[i]:c.amounts[i];if(amount===0n){quotes.push(null);routes.push({amount:'0',minimum:'0',data:'0x'});continue;}
-   const mark=state.prices[c.v.symbols[i]];const input={symbol:c.v.symbols[i],side,amount:String(amount),slippageBps:100,taker:c.address,reference:{symbol:c.v.symbols[i],at:mark.at,bid18:String(mark.bid18),ask18:String(mark.ask18),usdgUSD18:'1000000000000000000'}};const q=await fetchOpenOcean(openOceanInput(input),browserOpenOceanJson);reviewOpenOcean(q,input);quotes.push(q);routes.push({amount:String(amount),minimum:q.minBuyAmount,data:q.transaction.data});
-  }
+ async function quote(a,side,w){const c=await context(a,side,w);w.context=c;if(c.permissions.length)throw Error('Review the exact permissions before requesting the execution quote.');const quotes=new Array(c.v.assets.length),routes=new Array(c.v.assets.length);
+  await Promise.all(c.v.assets.map(async(_,i)=>{
+   const amount=side==='buy'?c.inputs.allocations[i]:c.amounts[i];if(amount===0n){quotes[i]=null;routes[i]={amount:'0',minimum:'0',data:'0x'};return;}
+   const mark=state.prices[c.v.symbols[i]];const input={symbol:c.v.symbols[i],side,amount:String(amount),slippageBps:100,taker:c.address,reference:{symbol:c.v.symbols[i],at:mark.at,bid18:String(mark.bid18),ask18:String(mark.ask18),usdgUSD18:'1000000000000000000'}};const q=await fetchOpenOcean(openOceanInput(input),browserOpenOceanJson);reviewOpenOcean(q,input);quotes[i]=q;routes[i]={amount:String(amount),minimum:q.minBuyAmount,data:q.transaction.data};
+  }));
   if(c.session!==state.session||c.account!==state.account)throw Error('Wallet changed. Review a new batch.');
   const expiresAt=Math.min(Date.now()+90000,...quotes.filter(Boolean).map(q=>q.expiresAt));if(expiresAt<Date.now()+4000)throw Error('Routes expired while loading. Request a fresh batch quote.');const deadline=Math.floor(expiresAt/1000);
   let args,details,plan={kind:'atomic.'+side,router:c.address,vault:a,assets:c.v.assets,symbols:c.v.symbols,quotes,routes,deadline,account:state.account};

@@ -1,6 +1,7 @@
 import { validateOpenOcean } from './openocean.js';
 const ROOT = 'https://open-api.openocean.finance/v4/4663';
 let gasCache;
+let gasRequest;
 let nextRequestAt = 0;
 let requestQueue = Promise.resolve();
 
@@ -16,10 +17,13 @@ async function publicRequestSlot() {
 
 export async function fetchOpenOcean(params, fetchJson, now = Date.now()) {
   if (!gasCache || now - gasCache.at > 30000) {
-    const result = await fetchJson(ROOT + '/gasPrice');
-    const gas = result?.data?.standard?.maxFeePerGas ?? result?.data?.standard;
-    if (result?.code !== 200 || !/^[1-9][0-9]*$/.test(String(gas))) throw Error('OpenOcean gas estimate unavailable.');
-    gasCache = { at: now, value: String(gas) };
+    if (!gasRequest) gasRequest = (async () => {
+      const result = await fetchJson(ROOT + '/gasPrice');
+      const gas = result?.data?.standard?.maxFeePerGas ?? result?.data?.standard;
+      if (result?.code !== 200 || !/^[1-9][0-9]*$/.test(String(gas))) throw Error('OpenOcean gas estimate unavailable.');
+      gasCache = { at: now, value: String(gas) };
+    })().finally(() => { gasRequest = undefined; });
+    await gasRequest;
   }
   const query = new URLSearchParams({ inTokenAddress: params.sellToken, outTokenAddress: params.buyToken, amountDecimals: params.sellAmount, gasPriceDecimals: gasCache.value, slippage: String(params.slippageBps / 100), account: params.taker });
   const quote = await fetchJson(ROOT + '/swap?' + query);
