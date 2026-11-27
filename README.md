@@ -1,5 +1,11 @@
 # HOODSET
 
+## Clear positions and quote refresh (2.13)
+
+Basket pages and portfolio disclosure show the Stock Token quantities and current weights represented by the connected wallet's exact share balance, using redemption rounding and active backing only. The one-full-share composition remains labelled separately. Loose wallet Stock Tokens, including mint refunds, are distinguished from vault-backed share positions. RH Stock Tokens represent economic exposure through RHJ-issued debt securities; basket shares do not confer direct shareholder rights.
+
+Transaction reviews show expiry status, disable expired sends and offer an in-dialog refresh. Batch and single-token quotes fetch fresh routes/minimum outputs; stable requests are simulated again. Refresh never sends, refuses submitted requests, preserves account and pending-transaction guards, and requires a new wallet confirmation. Exact approval/deployment reviews have ten minutes; swap quote freshness limits are unchanged. Solidity contracts and runtime hashes are unchanged.
+
 ## Atomic basket execution (2.12)
 
 The new HoodsetBasketRouter combines component purchases with minting into one transaction, and combines redemption with all component sales into one transaction. Initial exact USDG, contributed-token and share approvals remain separate. The current deployed vault runtime is pinned and unchanged; deployment of this helper is an explicit user-confirmed ETH gas transaction. No helper mainnet deployment is claimed by the source. Import/deploy in the Batch view verifies the exact compiled runtime.
