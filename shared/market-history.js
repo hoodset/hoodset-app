@@ -35,6 +35,7 @@ function anniversary(end,period){
 }
 const empty=(reason,missing=[])=>({ready:false,reason,missing,returnBps:null,drawdownBps:null,points:[]});
 export function historicalBasket(theme,history,period='1Y',now=Date.now()){
+  if(history?.displayAvailable===false)return empty(history.error||'Historical prices are currently unavailable.');
   if(!history?.configured)return empty('Historical price source is not connected.');
   if(!['1D','1M','1Y'].includes(period))return empty('Choose a historical period.');
   const {assets,weights}=theme;

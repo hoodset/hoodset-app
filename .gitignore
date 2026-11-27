@@ -13,3 +13,6 @@ web/*.bundle.js
 web/chain/
 .DS_Store
 artifacts/
+node_modules/
+live-research/
+.cache/

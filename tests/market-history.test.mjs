@@ -9,6 +9,22 @@ const provider=(symbol,rows=dates.map(datetime=>({datetime,close:'100'})))=>({st
 function fixture(){const series={};for(const symbol of ['SPY','AAPL','NVDA'])series[symbol]=normalizeHistory(symbol,provider(symbol),now);const a=series.AAPL.points,b=series.NVDA.points;a.at(-1).close='200';b.at(-1).close='50';return{configured:true,series};}
 const theme={assets:['AAPL','NVDA'],weights:[50,50]};
 
+test('an API key alone cannot expose historical data, cached series or use provider credits',async()=>{
+  let providerCalls=0,cacheReads=0;
+  const service=createHistoryService({clock:()=>now,fetcher:async()=>{providerCalls++;throw Error('must not fetch');}});
+  const db={prepare(){cacheReads++;throw Error('must not read cache');}};
+  for(const rights of [undefined,'Basic','true','internal']){
+    const result=await service(new Request('https://hoodset.test/api/history'),{TWELVE_DATA_API_KEY:'private-test-key',TWELVE_DATA_DISPLAY_RIGHTS:rights,HISTORY_DB:db});
+    assert.equal(result.body.displayAvailable,false);
+    assert.equal(result.body.availability,'display-not-configured');
+    assert.deepEqual(result.body.series,{});
+    assert.deepEqual(result.body.pending,[]);
+  }
+  assert.equal(providerCalls,0);assert.equal(cacheReads,0);
+  const historical=historicalBasket(theme,{...fixture(),displayAvailable:false,error:'History unavailable'},'1Y',now);
+  assert.equal(historical.ready,false);assert.equal(historical.returnBps,null);
+});
+
 test('daily adapter verifies symbol, currency, interval, positive closes and unique valid dates',()=>{
   const rows=[{datetime:'2026-11-24',close:'100.12345678901'},{datetime:'2026-11-25',close:'102'}];
   assert.equal(normalizeHistory('AAPL',provider('AAPL',rows),now).points.length,2);
@@ -50,12 +66,12 @@ test('return sorting is numeric in both directions and missing rows remain last'
 });
 test('history service requires a private key and cannot act as an arbitrary symbol proxy',async()=>{
   let calls=0;const service=createHistoryService({fetcher:async()=>{calls++;},clock:()=>now});
-  for(const key of [undefined,'demo']){const r=await service(new Request('https://hoodset.test/api/history'),{TWELVE_DATA_API_KEY:key});assert.equal(r.body.configured,false);}
+  for(const key of [undefined,'demo']){const r=await service(new Request('https://hoodset.test/api/history'),{TWELVE_DATA_DISPLAY_RIGHTS:'external-display',TWELVE_DATA_API_KEY:key});assert.equal(r.body.configured,false);}
   assert.equal(calls,0);assert.equal((await service(new Request('https://hoodset.test/api/history?symbols=EVIL'),{})).status,400);
 });
 test('persistent history survives fresh service instances and shares the rolling quota across requests',async t=>{
   let at=now;const calls=[];const fetcher=async(url,opts)=>{calls.push({url,opts});return new Response(JSON.stringify(provider(new URL(url).searchParams.get('symbol'))));};
-  const service=createHistoryService({fetcher,clock:()=>at});const request=new Request('https://hoodset.test/api/history'),env={TWELVE_DATA_API_KEY:'private-test-key',HISTORY_DB:localD1()};t.after(()=>env.HISTORY_DB.close());
+  const service=createHistoryService({fetcher,clock:()=>at});const request=new Request('https://hoodset.test/api/history'),env={TWELVE_DATA_DISPLAY_RIGHTS:'external-display',TWELVE_DATA_API_KEY:'private-test-key',HISTORY_DB:localD1()};t.after(()=>env.HISTORY_DB.close());
   const a=await service(request,env);assert.equal(calls.length,8);assert.equal(Object.keys(a.body.series).length,8);assert.equal(a.body.pending.length,9);assert.equal(a.body.retryAfter,65);
   assert.ok(calls.every(c=>c.opts.headers.Authorization==='apikey private-test-key'&&!c.url.includes('private-test-key')&&new URL(c.url).searchParams.get('adjust')==='splits'&&new URL(c.url).searchParams.get('end_date')==='2026-11-26'));
   assert.equal(JSON.stringify(a).includes('private-test-key'),false);
@@ -66,20 +82,20 @@ test('persistent history survives fresh service instances and shares the rolling
 });
 test('authorization and quota errors stay explicit without reflecting provider secrets',async t=>{
   for(const code of [401,429]){const db=localD1();t.after(()=>db.close());let calls=0;const service=createHistoryService({clock:()=>now,fetcher:async()=>{calls++;return new Response(JSON.stringify({status:'error',code,message:'secret-key reflected by provider'}),{status:code});}});
-    const r=await service(new Request('https://hoodset.test/api/history'),{TWELVE_DATA_API_KEY:'secret-key',HISTORY_DB:db});assert.equal(calls,1);assert.equal(JSON.stringify(r).includes('secret-key'),false);assert.equal(Object.keys(r.body.series).length,0);assert.ok(code===401?r.body.error:r.body.retryAfter);
+    const r=await service(new Request('https://hoodset.test/api/history'),{TWELVE_DATA_DISPLAY_RIGHTS:'external-display',TWELVE_DATA_API_KEY:'secret-key',HISTORY_DB:db});assert.equal(calls,1);assert.equal(JSON.stringify(r).includes('secret-key'),false);assert.equal(Object.keys(r.body.series).length,0);assert.ok(code===401?r.body.error:r.body.retryAfter);
   }
 });
 
 
 test('missing durable storage sends no external calls instead of restarting an ephemeral quota',async()=>{
  let calls=0;const service=createHistoryService({fetcher:async()=>{calls++;},clock:()=>now});
- const r=await service(new Request('https://hoodset.test/api/history'),{TWELVE_DATA_API_KEY:'private-test-key'});
+ const r=await service(new Request('https://hoodset.test/api/history'),{TWELVE_DATA_DISPLAY_RIGHTS:'external-display',TWELVE_DATA_API_KEY:'private-test-key'});
  assert.equal(calls,0);assert.match(r.body.error,/Persistent history cache/);
 });
 test('concurrent cold instances share asset leases and never duplicate provider requests',async t=>{
  const db=localD1();t.after(()=>db.close());const seen=[];
  const fetcher=async url=>{const symbol=new URL(url).searchParams.get('symbol');seen.push(symbol);await new Promise(resolve=>setTimeout(resolve,1));return new Response(JSON.stringify(provider(symbol)));};
- const env={TWELVE_DATA_API_KEY:'private-test-key',HISTORY_DB:db},request=new Request('https://hoodset.test/api/history');
+ const env={TWELVE_DATA_DISPLAY_RIGHTS:'external-display',TWELVE_DATA_API_KEY:'private-test-key',HISTORY_DB:db},request=new Request('https://hoodset.test/api/history');
  await Promise.all([createHistoryService({fetcher,clock:()=>now})(request,env),createHistoryService({fetcher,clock:()=>now})(request,env)]);
  assert.equal(seen.length,8);assert.equal(new Set(seen).size,8);
  const cached=await db.prepare('SELECT COUNT(*) AS count FROM history_cache').first();assert.equal(cached.count,8);

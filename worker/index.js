@@ -1,4 +1,5 @@
 import{marketHistory}from'./history.js';
+import{pageMetadata,publicationFile}from'./publication.js';
 import{ALLOWED,CHAIN_ID}from'./assets.js';import{validateRpc}from'./policy.js';import{ASSETS}from'../.generated/assets.js';
 const mem=new Map();const headers={'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 const json=(d,status=200)=>new Response(JSON.stringify(d),{status,headers});
@@ -11,4 +12,22 @@ if(url.pathname==='/api/prices'){const symbols=(url.searchParams.get('symbols')|
 if(url.pathname==='/api/rpc'){if(method!=='POST')return json({error:'POST required.'},405);const text=await request.text();if(text.length>500000)return json({error:'RPC batch too large.'},413);const body=validateRpc(JSON.parse(text));return json(await remote(rpc,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}));}
 if(url.pathname==='/api/swap/quote')return json({error:'OpenOcean quotes are requested directly by the browser. This Site does not proxy or submit swaps.'},410);
 return json({error:'API route not found.'},404);}
-export default{async fetch(request,env,ctx){try{const url=new URL(request.url);if(url.pathname.startsWith('/api/')){if(request.method!=='GET'&&request.method!=='POST')return json({error:'Method not allowed.'},405);const origin=request.headers.get('origin');if(origin&&origin!==url.origin)return json({error:'Cross-origin requests are not allowed.'},403);return await api(request,env||{});}const key=url.pathname==='/'?'/index.html':url.pathname;const a=ASSETS[key];if(!a)return new Response('Not found',{status:404});const bytes=Uint8Array.from(atob(a.body),c=>c.charCodeAt(0));return new Response(a.gzip?new Response(bytes).body.pipeThrough(new DecompressionStream('gzip')):bytes,{headers:{'Content-Type':a.type,'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','Permissions-Policy':'camera=(), microphone=(), geolocation=()'}});}catch(e){return json({error:e instanceof SyntaxError?'Invalid request JSON.':e.message||'Request failed.'},e.upstream?502:400);}}};
+export default{async fetch(request,env,ctx){
+  try{
+    const url=new URL(request.url),publication=publicationFile(request);
+    if(publication)return publication;
+    if(url.pathname.startsWith('/api/')){
+      if(request.method!=='GET'&&request.method!=='POST')return json({error:'Method not allowed.'},405);
+      const origin=request.headers.get('origin');
+      if(origin&&origin!==url.origin)return json({error:'Cross-origin requests are not allowed.'},403);
+      return await api(request,env||{});
+    }
+    if(request.method!=='GET'&&request.method!=='HEAD')return new Response('Method not allowed',{status:405});
+    const key=url.pathname==='/'?'/index.html':url.pathname,a=ASSETS[key];
+    if(!a)return new Response('Not found',{status:404});
+    const bytes=Uint8Array.from(atob(a.body),c=>c.charCodeAt(0));
+    let body=a.gzip?new Response(bytes).body.pipeThrough(new DecompressionStream('gzip')):bytes;
+    if(key==='/index.html')body=pageMetadata(await new Response(body).text(),request);
+    return new Response(request.method==='HEAD'?null:body,{headers:{'Content-Type':a.type,'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','Permissions-Policy':'camera=(), microphone=(), geolocation=()'}});
+  }catch(e){return json({error:e instanceof SyntaxError?'Invalid request JSON.':e.message||'Request failed.'},e.upstream?502:400);}
+}};

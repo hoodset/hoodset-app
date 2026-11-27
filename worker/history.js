@@ -1,6 +1,7 @@
 import {ALLOWED} from './assets.js';
 import {HISTORY_SOURCE,HISTORY_URL,normalizeHistory,nyDay} from '../shared/market-history.js';
 const TTL=6*3600000,VERSION=2;
+export const historyDisplayAllowed=env=>env?.TWELVE_DATA_DISPLAY_RIGHTS==='external-display';
 const waiting=(message,stop=false)=>Object.assign(Error(message),{pending:true,stop});
 export function createHistoryService({fetcher=fetch,clock=Date.now}={}){
   async function series(symbol,key,db){
@@ -30,7 +31,10 @@ export function createHistoryService({fetcher=fetch,clock=Date.now}={}){
     const url=new URL(request.url),symbols=[...new Set(['SPY',...(url.searchParams.get('symbols')||Object.keys(ALLOWED).join(',')).split(',')])];
     if(symbols.length>17||symbols.some(s=>!Object.hasOwn(ALLOWED,s)))return {status:400,body:{error:'Invalid historical asset symbols.'}};
     const key=env.TWELVE_DATA_API_KEY;
-    const body={provider:HISTORY_SOURCE,sourceUrl:HISTORY_URL,configured:!!key,adjustment:'splits',currency:'USD',interval:'1day',cache:'persistent',series:{},errors:{},pending:[],receivedAt:new Date(clock()).toISOString(),retryAfter:0};
+    const body={provider:HISTORY_SOURCE,sourceUrl:HISTORY_URL,configured:!!key,displayAvailable:!!key&&key!=='demo'&&historyDisplayAllowed(env),adjustment:'splits',currency:'USD',interval:'1day',cache:'persistent',series:{},errors:{},pending:[],receivedAt:new Date(clock()).toISOString(),retryAfter:0};
+    // A working API key does not grant external display or redistribution rights.
+    // Stop before both D1 reads and provider requests, including already cached data.
+    if(!historyDisplayAllowed(env)){body.error='Historical prices are currently unavailable on this deployment.';body.availability='display-not-configured';return{status:200,body};}
     if(!key||key==='demo'){body.configured=false;body.error='Connect a personal historical data key in Site settings.';return{status:200,body};}
     const binding=env.HISTORY_DB,db=binding?.withSession?binding.withSession('first-primary'):binding;
     if(!db){body.error='Persistent history cache is not available. No provider requests were sent.';return{status:200,body};}
