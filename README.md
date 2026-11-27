@@ -1,5 +1,20 @@
 # HOODSET
 
+## Current mainnet deployment
+
+HOODSET is live at https://hoodset.space on Robinhood Chain mainnet (4663). Users define Stock Token baskets, inspect vault backing, fund and mint with USDG, and redeem and sell through wallet-confirmed batch execution. Initial token permissions are separate. Basket share tokens are separate from project token $HSET.
+
+A funded mainnet round trip was completed and verified on 27 November 2026:
+
+- Existing vault: `0x3153a84df153d29f78326e577fa00079083b943a` (legacy name AI & Chips Set, share symbol MYCHIP).
+- Batch router: `0x256aa32b5d9c709e1588d21ff80a31b0f6446672`.
+- [Buy and mint receipt](https://robinhoodchain.blockscout.com/tx/0x0f388f7b589ead2a674e2715db7f5f8fb281e133c593ddf037f735a51ccbafd7): existing NVDA from an earlier purchase plus six component buys, followed by minting 0.047872579605240611 MYCHIP.
+- [Redeem and sell receipt](https://robinhoodchain.blockscout.com/tx/0x7c3c3753b5943dd5cb05fc2a96ebc71aa4b37a4ec3d3e7e32d0d25228856cd8e): all issued shares burned, seven redeemed components sold, 4.938350 USDG returned. Original test spend was 5 USDG; loose purchase refunds remained separately in the wallet and ETH gas was extra.
+
+Matching settlement events, share mint/burn and component/USDG Transfer logs were checked. The test vault was empty after the full exit. This historical test does not establish liquidity for other baskets or amounts. Contracts have not received an independent audit.
+
+Production no longer exposes the retired paper sandbox. Public allocation templates remain reference mixes until a user deploys and funds a vault.
+
 ## Clear positions and quote refresh (2.13)
 
 Basket pages and portfolio disclosure show the Stock Token quantities and current weights represented by the connected wallet's exact share balance, using redemption rounding and active backing only. The one-full-share composition remains labelled separately. Loose wallet Stock Tokens, including mint refunds, are distinguished from vault-backed share positions. RH Stock Tokens represent economic exposure through RHJ-issued debt securities; basket shares do not confer direct shareholder rights.
@@ -8,13 +23,13 @@ Transaction reviews show expiry status, disable expired sends and offer an in-di
 
 ## Atomic basket execution (2.12)
 
-The new HoodsetBasketRouter combines component purchases with minting into one transaction, and combines redemption with all component sales into one transaction. Initial exact USDG, contributed-token and share approvals remain separate. The current deployed vault runtime is pinned and unchanged; deployment of this helper is an explicit user-confirmed ETH gas transaction. No helper mainnet deployment is claimed by the source. Import/deploy in the Batch view verifies the exact compiled runtime.
+The new HoodsetBasketRouter combines component purchases with minting into one transaction, and combines redemption with all component sales into one transaction. Initial exact USDG, contributed-token and share approvals remain separate. The current deployed vault runtime is pinned and unchanged; deployment of this helper is an explicit user-confirmed ETH gas transaction. The deployed helper address and completed test receipts are listed above. Import/deploy in the Batch view verifies the exact compiled runtime.
 
 Interrupted individual purchases can migrate using their independently verified receipt ledger. The helper pulls only the remaining budget and previously acquired component quantities, then refunds unused assets. The old run is archived only after the batch mint receipt and all transfers verify. A failed swap, changed redemption quantity or unmet minimum reverts the execution; gas may still be charged. Prior donations to the helper are isolated and there is no owner, upgrade or sweep authority.
 
 When OpenOcean omits pool price impact, the batch flow can check execution-value deviation against a fresh matching RH bid/ask instead, capped at 5% in either direction. This is explicitly labelled RH reference deviation, assumes USDG = USD1, and includes spread/fees; it is not asserted to be pool-only price impact. Missing/stale marks still block. Per-swap minimums, aggregate minimum shares/USDG, calldata validation and transaction simulation apply independently.
 
-Local EVM tests cover a seven-component round trip, resumed inventory, 12-component baskets, rollback, min bounds, transfer/recipient violations, residual approvals, reserves, donations and reentrancy. These are not an independent audit or evidence of a completed funded mainnet batch.
+Local EVM tests cover a seven-component round trip, resumed inventory, 12-component baskets, rollback, min bounds, transfer/recipient violations, residual approvals, reserves, donations and reentrancy. These checks are separate from the funded mainnet receipts above and do not constitute an independent audit.
 
 ## Previous release: free history and Vercel (2.11)
 
@@ -31,7 +46,7 @@ Data, normalized history and adaptations remain CC BY-SA 4.0. Attribution, licen
 Sources: https://www.dolthub.com/repositories/post-no-preference/stocks ; https://www.dolthub.com/repositories/post-no-preference/stocks/doc/master/LICENSE.md ; https://creativecommons.org/licenses/by-sa/4.0/ .
 
 
-Noncustodial baskets of canonical RH Stock Tokens on Robinhood Chain (4663, ETH gas). OpenOcean public Swap API provides exact-input USDG buys and Stock Token sells without a 0x key. The previous paper experience remains separate at `/paper.html`.
+Noncustodial baskets of canonical RH Stock Tokens on Robinhood Chain (4663, ETH gas). OpenOcean public Swap API provides exact-input USDG buys and Stock Token sells without a 0x key.
 
 ## Build and preview
 
@@ -76,7 +91,7 @@ Public API availability and successful quote construction do not establish legal
 
 The deployment UI takes positive weights totaling exactly 100%, metadata and supply cap, then derives initial quantities using fresh reference marks. Market price movement does not rebalance quantities. A new vault is deployed by the user's wallet, then verified by runtime hash and canonical composition before operations appear. Source, ABI, bytecode and complete self-contained Standard JSON compiler input are downloadable in `/chain/`.
 
-Acquire components first, then approve exact amounts to the vault and mint. OpenOcean buys are exact input, so a basket-component budget is an estimate: check the minimum and top up missing tokens before minting. Swaps, approvals and minting are separate transactions; partial purchases remain in the wallet if a later step fails. In-kind redemption does not require a USD mark. To receive USDG, withdraw underlying and sell components separately.
+The default Batch view buys missing components and mints in one execution after initial exact permissions. Its reverse path redeems and sells the received components for USDG together. Individual steps remain available for separate swaps, deposits and in-kind withdrawals; partial purchases in that mode remain in the wallet if a later step fails. In-kind redemption does not require a USD mark.
 
 The new basket contract has **not received an independent audit**. Local EVM tests and a mainnet read-only constructor simulation are not a substitute.
 
@@ -92,7 +107,7 @@ The custom Cloudflare Worker is bundled at `dist/server/index.js` with embedded 
 
 The release has tests for OpenOcean's recorded mainnet buy/sell calldata, malicious recipient/router/asset/amount substitutions, minimum output and expiry, wallet/chain binding, actual transfer settlement, and pending transaction duplicate protection. The basket contract integration checks use a local EVM. A known broadcast with no receipt remains pending and blocks resubmission of the same operation across reloads; a timeout is not a failed transaction.
 
-The wallet-funded purchase/sale test requires the owner's wallet confirmations. Do not report it as completed before receipts and transfer deltas are observed. The user-authorized test budget for the current development session is at most 5 USDG plus ETH gas; the intended test is NVDA buy followed by selling only the acquired quantity.
+The completed mainnet test and its exact scope are documented at the top of this README. Every future funded operation requires the connected owner to review and confirm in their wallet. No transaction is submitted by a server.
 
 There is no global vault/community indexer or full historical cost basis/P&L. Known vaults are a local address book plus imported/shared addresses. Charts use real observations collected by this browser, with no synthetic performance.
 
@@ -185,7 +200,7 @@ A USDG budget is allocated using the actual contract mint ratio and fresh token-
 
 Purchases are separate transactions, not an atomic USDG zap: partial purchases and leftovers remain in the user's wallet. ETH gas is separate. Local progress is scoped to account, chain and immutable composition. Pending or unknown broadcast outcomes block another send. Reload reconstructs spend and components from chain receipts, including same-nonce speed-up/cancellation recovery. Do not clear browser storage during an unfinished run. No keys are stored by this flow.
 
-Tests use recorded OpenOcean calldata, simulated provider replies/receipts, and a local EVM. They do not establish current liquidity for every mainnet component or a completed funded mainnet purchase. A real purchase still needs the user's connected wallet and signatures.
+This 2.7 individual-step implementation predates the 2.12 batch flow and the funded mainnet test documented above. Its tests use recorded OpenOcean calldata, simulated provider replies/receipts and a local EVM; current liquidity still requires a fresh route and wallet confirmation.
 
 Text assets are gzip-packed inside the Worker build and streamed through DecompressionStream when served. HTTP clients receive the original bytes without needing a special content encoding.
 
