@@ -1,3 +1,4 @@
+import {catalogueProxy} from './catalogue-proxy.js';
 import{readFileSync}from'node:fs';
 import{api,json}from'../worker/api.js';
 import{pageMetadata,publicationFile}from'../worker/publication.js';
@@ -12,6 +13,7 @@ export async function apiResponse(request,endpoint,options={}){
     url.pathname='/api/'+endpoint;
     const body=request.method==='POST'?await request.arrayBuffer():undefined;
     if(body&&body.byteLength>500000)return json({error:'Request too large.'},413);
+    if(endpoint==='catalogue')return await catalogueProxy(new Request(url,{method:request.method,headers:request.headers,...(body?{body}:{})}),options.catalogueOptions);
     const env={RH_RPC_URL:process.env.RH_RPC_URL};
     if(endpoint==='history')env.HISTORY_STORE=options.historyStore||(historyStore||=runtimeHistoryStore());
     return await api(new Request(url,{method:request.method,headers:request.headers,...(body?{body}:{})}),env);

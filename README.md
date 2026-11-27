@@ -1,5 +1,9 @@
 # HOODSET
 
+## Community baskets (2.16)
+
+[The public vault catalogue](https://hoodset.space/#catalogue) lists real, runtime-checked RH mainnet vaults across browsers. Add a public address, inspect issued supply and active backing, and copy starting or freshly valued current weights into a new builder draft. Empty and unreadable vaults remain explicit. Copying transfers no assets or performance and requires no wallet. [Verification, copy semantics and persistent storage](docs/community-catalogue.md).
+
 ## Encrypted Drafts (2.15)
 
 [Password-protected draft links](https://hoodset.space/#encrypted) encrypt the basket composition in the browser with AES-256-GCM and PBKDF2-SHA256. Recipients unlock, preview and explicitly import a draft; no wallet or transaction is needed. Only shared link payloads are encrypted. Local working drafts remain plaintext, and deployed vaults and transactions remain public. [Format, threat model and limitations](docs/encrypted-drafts.md).

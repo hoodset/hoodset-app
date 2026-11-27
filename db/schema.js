@@ -11,3 +11,6 @@ export const historyLocks=sqliteTable('history_locks',{
 export const historyProvider=sqliteTable('history_provider',{
  id:text('id').primaryKey(),retryAt:integer('retry_at').notNull()
 });
+export const vaultCatalogue=sqliteTable('vault_catalogue',{
+ address:text('address').primaryKey(),listedAt:integer('listed_at').notNull(),snapshot:text('snapshot').notNull(),checkedAt:integer('checked_at').notNull(),checkedBlock:integer('checked_block').notNull()
+});
