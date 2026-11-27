@@ -1,5 +1,9 @@
 # HOODSET
 
+## Stress test and HSET holder library (2.17.0)
+
+[Stress test](https://hoodset.space/#stress) models explicit component price shocks against a selected starting mix, with cent-reconciled contributions, concentration and effective token count. Interactive analysis is open to everyone. Holding at least 1 HSET in the connected RH mainnet wallet enables up to 12 browser-local saved scenarios and an outcome comparison table. The app verifies the pinned HSET contract and same-block balance without a transfer or approval. This is not background monitoring, a live-position risk estimate or server-enforced private storage. [Calculation and access details](docs/stress-test.md).
+
 ## Community baskets (2.16)
 
 [The public vault catalogue](https://hoodset.space/#catalogue) lists real, runtime-checked RH mainnet vaults across browsers. Add a public address, inspect issued supply and active backing, and copy starting or freshly valued current weights into a new builder draft. Empty and unreadable vaults remain explicit. Copying transfers no assets or performance and requires no wallet. [Verification, copy semantics and persistent storage](docs/community-catalogue.md).
