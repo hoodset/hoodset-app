@@ -1,0 +1,584 @@
+{
+  "checkedAt": "2026-11-26",
+  "source": "https://api.robinhood.com/rhj/assets",
+  "assets": [
+    {
+      "id": "0x000000000000000000000000000000000dd725c68f94489f8400e4fb3dde8c5f",
+      "tokenSymbol": "V",
+      "tokenName": "Visa \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x9BFF87700337babF5099e99F322F888DafB1d551",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.001280316388505401",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x9bff87700337babf5099e99f322f888dafb1d551.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US92826C8394"
+    },
+    {
+      "id": "0x000000000000000000000000000000001bbb45628de84cb2917abd26680c7ab9",
+      "tokenSymbol": "AVGO",
+      "tokenName": "Broadcom \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x156E175DD063a8cE274C50654eF40e0032b3fbcF",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.001257318662278132",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x156e175dd063a8ce274c50654ef40e0032b3fbcf.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US11135F1012"
+    },
+    {
+      "id": "0x000000000000000000000000000000001c6f27a62789417d8ed359ed3c2d3da1",
+      "tokenSymbol": "SPY",
+      "tokenName": "SPDR S&P 500 ETF Trust \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x117cc2133c37B721F49dE2A7a74833232B3B4C0C",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.001717991187472003",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x117cc2133c37b721f49de2a7a74833232b3b4c0c.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US78462F1030"
+    },
+    {
+      "id": "0x000000000000000000000000000000002470b933c52d47ccad017ed9ee80c9ed",
+      "tokenSymbol": "QQQ",
+      "tokenName": "Invesco QQQ \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0xD5f3879160bc7c32ebb4dC785F8a4F505888de68",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000700791241405425",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd5f3879160bc7c32ebb4dc785f8a4f505888de68.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US46090E1038"
+    },
+    {
+      "id": "0x0000000000000000000000000000000026e1db941a0a4a849cf140abd8862567",
+      "tokenSymbol": "JPM",
+      "tokenName": "JPMorgan Chase \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x07c44dA0848960bFf894F17584dB8B2F60B2409E",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000000000000000000",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x07c44da0848960bff894f17584db8b2f60b2409e.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US46625H1005"
+    },
+    {
+      "id": "0x00000000000000000000000000000000307bb0113ca54f93adf80f4ff2bf681a",
+      "tokenSymbol": "MSFT",
+      "tokenName": "Microsoft \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.001737154378546732",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xe93237c50d904957cf27e7b1133b510c669c2e74.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US5949181045"
+    },
+    {
+      "id": "0x00000000000000000000000000000000343e7beca03644bcba2e50b8236784f5",
+      "tokenSymbol": "META",
+      "tokenName": "Meta Platforms \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000541459879451635",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xc0d6457c16cc70d6790dd43521c899c87ce02f35.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US30303M1027"
+    },
+    {
+      "id": "0x000000000000000000000000000000004f508d5e2a7042299694d85c2f362ad2",
+      "tokenSymbol": "AMZN",
+      "tokenName": "Amazon \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000000000000000000",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x12f190a9f9d7d37a250758b26824b97ce941bf54.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US0231351067"
+    },
+    {
+      "id": "0x00000000000000000000000000000000500f14b2a92f44d6998e0e2b9cc9387e",
+      "tokenSymbol": "NFLX",
+      "tokenName": "Netflix \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0xE0444EF8BF4eD74f74FD73686e2ddF4C1c5591E8",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000000000000000000",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xe0444ef8bf4ed74f74fd73686e2ddf4c1c5591e8.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US64110L1061"
+    },
+    {
+      "id": "0x0000000000000000000000000000000053b69e2076884cc9ae2ada9bc7095df3",
+      "tokenSymbol": "GOOGL",
+      "tokenName": "Alphabet Class A \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000193924414112587",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US02079K3059"
+    },
+    {
+      "id": "0x000000000000000000000000000000007454a90b4aab491389ce9fa3c485de42",
+      "tokenSymbol": "PLTR",
+      "tokenName": "Palantir Technologies \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x894E1EC2D74FFE5AEF8Dc8A9e84686acCB964F2A",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000000000000000000",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US69608A1088"
+    },
+    {
+      "id": "0x0000000000000000000000000000000086aeaac3c7d9422c90f6fd41aff0eaf7",
+      "tokenSymbol": "AMD",
+      "tokenName": "AMD \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x86923f96303D656E4aa86D9d42D1e57ad2023fdC",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000000000000000000",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x86923f96303d656e4aa86d9d42d1e57ad2023fdc.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US0079031078"
+    },
+    {
+      "id": "0x00000000000000000000000000000000915f477416294f5099a5e0e09f327ce5",
+      "tokenSymbol": "NVDA",
+      "tokenName": "NVIDIA \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000775159164630595",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US67066G1040"
+    },
+    {
+      "id": "0x00000000000000000000000000000000970b46dbdece4ae4958a53815e62a85a",
+      "tokenSymbol": "COIN",
+      "tokenName": "Coinbase \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x6330D8C3178a418788dF01a47479c0ce7CCF450b",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000000000000000000",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x6330d8c3178a418788df01a47479c0ce7ccf450b.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US19260Q1076"
+    },
+    {
+      "id": "0x0000000000000000000000000000000098d983331a5245e98847e635b93eb920",
+      "tokenSymbol": "XOM",
+      "tokenName": "ExxonMobil Holdings Corporation \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0xf9B46d3D1B22199D4D1025a9cEDB540A33F1a2d5",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": false,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.005385843851125089",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xf9b46d3d1b22199d4d1025a9cedb540a33f1a2d5.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US30233Q1085"
+    },
+    {
+      "id": "0x00000000000000000000000000000000c2425be3658540dd8e2424cbf3c5c649",
+      "tokenSymbol": "AAPL",
+      "tokenName": "Apple \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.001090616965388660",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0xaf3d76f1834a1d425780943c99ea8a608f8a93f9.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US0378331005"
+    },
+    {
+      "id": "0x00000000000000000000000000000000cfece3244ea34bb29414dd9488b32d9f",
+      "tokenSymbol": "TSLA",
+      "tokenName": "Tesla \u2022 Robinhood Token",
+      "deployments": [
+        {
+          "contractAddress": "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+          "chainId": 4663,
+          "networkName": "Robinhood Chain",
+          "transporterEnabled": true,
+          "replicatorEnabled": false
+        }
+      ],
+      "currentMultiplier": "1.000000000000000000",
+      "pendingMultiplier": "",
+      "status": "ASSET_STATUS_ACTIVE",
+      "logoUrl": "https://cdn.robinhood.com/ncw_assets/logos/0x322f0929c4625ed5bad873c95208d54e1c003b2d.png",
+      "tradingCapabilities": {
+        "market": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "extended": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        },
+        "overnight": {
+          "whole": "TRADING_STATUS_TRADABLE",
+          "fractional": "TRADING_STATUS_TRADABLE"
+        }
+      },
+      "tokenDecimals": 18,
+      "isin": "US88160R1014"
+    }
+  ]
+}

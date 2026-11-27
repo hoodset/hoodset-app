@@ -1,0 +1,34 @@
+.ui-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  vertical-align: middle;
+  pointer-events: none;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-image) center / contain no-repeat;
+  mask: var(--icon-image) center / contain no-repeat;
+}
+.nav-item .ui-icon { width: 21px; height: 21px; }
+.create-set .ui-icon { width: 18px; height: 18px; }
+.network-icon .ui-icon { width: 23px; height: 23px; }
+.star { display: inline-flex; align-items: center; justify-content: center; }
+.star .ui-icon { width: 23px; height: 23px; }
+.star[aria-pressed="true"] { color: #6b48ac; }
+.empty-symbol .ui-icon { width: 48px; height: 48px; }
+.ui-icon-discover { --icon-image: url('/assets/icons/discover.png'); }
+.ui-icon-portfolio { --icon-image: url('/assets/icons/portfolio.png'); }
+.ui-icon-onchain { --icon-image: url('/assets/icons/onchain.png'); }
+.ui-icon-watchlist { --icon-image: url('/assets/icons/watchlist.png'); }
+.ui-icon-sectors { --icon-image: url('/assets/icons/sectors.png'); }
+.ui-icon-tokens { --icon-image: url('/assets/icons/tokens.png'); }
+.ui-icon-community { --icon-image: url('/assets/icons/community.png'); }
+.ui-icon-methodology { --icon-image: url('/assets/icons/methodology.png'); }
+.ui-icon-data { --icon-image: url('/assets/icons/data.png'); }
+.ui-icon-close { --icon-image: url('/assets/icons/close.png'); }
+.ui-icon-search { --icon-image: url('/assets/icons/search.png'); }
+.ui-icon-share { --icon-image: url('/assets/icons/share.png'); }
+.ui-icon-check { --icon-image: url('/assets/icons/check.png'); }
+.ui-icon-menu { --icon-image: url('/assets/icons/menu.png'); }
+.ui-icon-star-filled { --icon-image: url('/assets/icons/star-filled.png'); }
+.ui-icon-network { --icon-image: url('/assets/icons/network.png'); }

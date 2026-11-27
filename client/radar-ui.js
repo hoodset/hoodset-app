@@ -1,0 +1,72 @@
+import { mixRows,validateMix,mixSummary,budgetPlan,observedPerformance } from './basket-radar.js';
+import { SCALE,units,usd } from './finance.js';
+import { historicalBasket,compareHistorical } from '../shared/market-history.js';
+
+export function createRadarUI(ctx) {
+  const {state,saved,themes,esc,btn,icon,colors,basketMark,reference,allocation}=ctx;
+  const modes=[['performance','Performance','Historical price return'],['composition','Composition','Weights & concentration'],['buy','Buy preview','Plan your allocation']];
+  const pct=v=>v===null?'—':(v>0?'+':'')+(v/100).toFixed(2)+'%';
+  const date=at=>new Date(at).toLocaleDateString([], {month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+  const metric=(label,value,note='')=>`<div><small>${label}</small><strong>${value}</strong>${note?`<span>${note}</span>`:''}</div>`;
+
+  function selection(){
+    const base=themes.find(t=>t.id===state.radarTheme)||themes[0];
+    const rows=state.radarEditing&&saved.radarDrafts?.[base.id]?saved.radarDrafts[base.id]:mixRows(base);
+    try{return {base,rows,theme:{...base,...validateMix(rows)},error:''};}
+    catch(e){return {base,rows,theme:null,error:e.message};}
+  }
+
+  function performance(t,r){return state.radarSource==='market'?historicalBasket(t,state.marketHistory,state.radarRange==='OBSERVED'?'1Y':state.radarRange):observedPerformance(r?ctx.observations()['theme:'+r.key]:[],state.radarRange,Date.now(),!!r&&r.value!==null);}
+
+  function historyStatus(){
+    const h=state.marketHistory,count=Object.keys(h?.series||{}).length;
+    const label=state.historyLoading?'Loading historical prices…':state.historyError||h?.error||(!h?.configured?'Historical source needs connection':`${count}/17 daily histories loaded`);
+    return `<div class="radar-history-status"><span>${esc(label)}${h?.pending?.length?' / '+h.pending.length+' waiting for provider quota':''}</span>${btn(state.historyLoading?'LOADING…':'REFRESH HISTORY','radar-refresh-history','text-btn','',state.historyLoading)}<a href="#data">Source & methodology</a></div>`;
+  }
+
+  function spark(result){
+    if(!result.ready)return `<div class="radar-history-empty"><span>${icon('sectors')}</span><h3>${state.radarSource==='market'&&!state.marketHistory?.configured?(state.historyLoading?'LOADING PRICE HISTORY.':'CONNECT PRICE HISTORY.'):state.radarRange==='1Y'?'1Y HISTORY NOT AVAILABLE.':'HISTORY IS NOT READY.'}</h3><p>${esc(state.historyError||result.reason)}</p><small>${state.radarSource==='market'?'Every component needs the same completed market sessions.':'Only actual marks collected by this browser.'} Missing data stays unranked.</small></div>`;
+    const values=result.points.map(x=>Number(BigInt(x.value))/1e18),lo=Math.min(...values),hi=Math.max(...values),pad=Math.max((hi-lo)*.1,hi*.0001),min=lo-pad,max=hi+pad,start=result.points[0].at,end=result.points.at(-1).at;
+    const points=values.map((v,i)=>`${10+(result.points[i].at-start)/(end-start)*680},${12+(max-v)/(max-min)*140}`).join(' ');
+    return `<div class="radar-chart"><svg viewBox="0 0 700 180" role="img" aria-label="${state.radarSource==='market'?'Historical price calculation':'Observed reference value'} for the selected composition"><g stroke="#c9ccbe" stroke-dasharray="2 6">${[30,75,120,165].map(y=>`<line x1="0" y1="${y}" x2="700" y2="${y}"/>`).join('')}</g><polyline points="${points}" fill="none" stroke="#9569df" stroke-width="3"/></svg><div><span>${date(start)}</span><span>${date(end)}</span></div></div>`;
+  }
+
+  function editor(s){
+    if(!state.radarEditing)return '';
+    const available=state.assets.filter(a=>!s.rows.some(r=>r.symbol===a.tokenSymbol));
+    let sum=0;for(const r of s.rows){const x=Number(r.weight);if(Number.isFinite(x))sum+=x;}
+    return `<div class="radar-editor"><div class="radar-editor-heading"><div><h3>MAKE IT YOURS.</h3><p>2–12 assets. Initial weights total 100%.</p></div>${btn('Equal weights','radar-equal','text-btn')}</div><div class="radar-edit-rows">${s.rows.map((r,i)=>`<div class="radar-edit-row"><span><b>${esc(r.symbol)}</b><small>${['SPY','QQQ'].includes(r.symbol)?'ETF Stock Token':'Stock Token'}</small></span><label><span class="sr-only">${esc(r.symbol)} weight</span><input data-radar-weight="${i}" aria-label="${esc(r.symbol)} weight" inputmode="decimal" autocomplete="off" value="${esc(r.weight)}" maxlength="8"><em>%</em></label>${btn(icon('close'),'radar-remove','icon-btn',`data-symbol="${esc(r.symbol)}" aria-label="Remove ${esc(r.symbol)}"`,s.rows.length<=2)}</div>`).join('')}</div><div class="radar-edit-add"><label class="sr-only" for="radar-add-token">Token to add</label><select id="radar-add-token" aria-label="Token to add" ${!available.length||s.rows.length>=12?'disabled':''}>${available.map(a=>`<option value="${a.tokenSymbol}">${a.tokenSymbol} / ${esc(a.tokenName.replace(' • Robinhood Token',''))}</option>`).join('')}</select>${btn('ADD TOKEN','radar-add','', '',!available.length||s.rows.length>=12)}</div><div class="radar-weight-total ${s.error?'invalid':''}"><span>Total initial weight</span><strong>${sum.toFixed(2)} / 100%</strong></div>${s.error?`<p class="form-error">${esc(s.error)} Statistics that require a complete allocation are paused.</p>`:''}<div class="radar-editor-actions">${btn('SAVE THIS MIX','radar-save','primary','',!!s.error)}${btn('Cancel edits','radar-cancel','text-btn')}${btn('Restore template','radar-reset','text-btn')}</div><p class="radar-note">Adding or removing a token redistributes initial weights proportionally. Saving creates your own tracked composition; it never changes a deployed vault.</p></div>`;
+  }
+
+  function panel(s){
+    const t=s.theme,r=t?reference(t):null,summary=t?mixSummary(t):null;
+    const title=`<div class="radar-set-heading">${basketMark(s.base)}<div><small>${state.radarEditing?'EDITING YOUR MIX':s.base.custom?'YOUR SAVED MIX':'REFERENCE TEMPLATE'}</small><h3>${esc(s.base.name)}</h3></div>${btn(icon(saved.watch.includes(s.base.id)?'star-filled':'watchlist'),'watch','icon-btn',`data-id="${s.base.id}" aria-label="Toggle radar watchlist" aria-pressed="${saved.watch.includes(s.base.id)}"`)}</div><p class="radar-thesis">${esc(s.base.thesis)}</p>`;
+    let canBuild=!!t&&!!r&&r.value!==null&&!state.loading;
+    if(state.radarMode==='buy')try{canBuild=canBuild&&budgetPlan(t,state.radarBudget,state.prices).complete;}catch{canBuild=false;}
+    const actions=`<div class="radar-main-actions">${!state.radarEditing?btn('CUSTOMIZE MIX','radar-edit',''):''}${btn(state.radarMode==='buy'?'BUILD & FUND THIS MIX':'PLAN THIS MIX',state.radarMode==='buy'?'radar-build':'radar-plan','primary','',!canBuild)}</div><p class="radar-note">Create a vault for this mix, then review funding through your wallet.</p>`;
+    let content='';
+    if(state.radarMode==='performance'){
+      const result=t?performance(t,r):{ready:false,reason:s.error,returnBps:null,drawdownBps:null};
+      const market=state.radarSource==='market',period=market&&state.radarRange==='OBSERVED'?'1Y':state.radarRange;
+      content=`<div class="radar-source-tabs" role="group" aria-label="Performance source">${[['market','Historical prices'],['browser','This browser']].map(([id,label])=>btn(label,'radar-source',state.radarSource===id?'active':'',`data-source="${id}" aria-pressed="${state.radarSource===id}"`)).join('')}</div>${market?historyStatus():''}<div class="radar-periods" role="group" aria-label="Radar history period">${(market?['1D','1M','1Y']:['OBSERVED','1D','1M','1Y']).map(x=>btn(x==='OBSERVED'?'Available history':x,'radar-range',period===x?'active':'',`data-range="${x}" aria-pressed="${period===x}"`)).join('')}${market?`<label class="radar-sort-label"><span class="sr-only">Sort performance</span><select id="radar-sort" aria-label="Sort performance"><option value="desc" ${state.radarDirection==='desc'?'selected':''}>Highest return</option><option value="asc" ${state.radarDirection==='asc'?'selected':''}>Lowest return</option></select></label>`:''}</div><div class="radar-metrics">${metric(market?period+' price return':'Observed change',`<span class="${result.returnBps<0?'negative':'positive'}">${pct(result.returnBps)}</span>`,result.ready?result.count+(market?' daily closes':' actual observations'):'No return inferred')}${metric(market?'Daily-close drawdown':'Observed drawdown',result.ready?(result.drawdownBps/100).toFixed(2)+'%':'—',market?'Within selected period':'Among retained marks')}${metric(market?'$100 at period start':'Reference value',usd(market?result.endValue:r?.value),market?'Historical ending value':'$100 at the first complete mark')}</div>${spark(result)}<p class="radar-note">${market?'Historical calculation of this mix using Twelve Data split-adjusted underlying stock closes. Weights apply at the period start; quantities then stay fixed. Excludes cash dividends, fees, gas and RH token multiplier effects. This is not an issued vault’s track record or a forecast.':`${state.radarRange==='OBSERVED'?'Each mix has its own tracking start; these windows are not a comparable ranking.':'A complete selected period is required.'} Actual browser marks are stored separately for every composition.`}</p>`;
+    }else if(state.radarMode==='buy'){
+      let plan,error='';try{if(!t)throw Error(s.error);plan=budgetPlan(t,state.radarBudget,state.prices);}catch(e){error=e.message;}
+      content=`<label class="radar-budget-label" for="radar-budget">Reference budget <span>USDG</span></label><div class="radar-budget-input"><input id="radar-budget" aria-label="Radar reference budget" inputmode="decimal" autocomplete="off" value="${esc(state.radarBudget)}" maxlength="16"><b>USDG</b></div><div class="radar-quick">${['5','25','100'].map(v=>btn(v+' USDG','radar-budget',state.radarBudget===v?'active':'',`data-budget="${v}"`)).join('')}</div>${error?`<p class="form-error">${esc(error)}</p>`:`<div class="radar-plan-head"><span>COMPONENT</span><span>BUDGET</span><span>REFERENCE TOKENS</span></div><div class="radar-plan">${plan.rows.map(x=>`<div><b>${x.symbol}</b><span>${units(x.usdg,6,6)} USDG</span><span>${units(x.tokens,18,8)}</span></div>`).join('')}</div>${plan.complete?`<div class="radar-share-target"><span>New-vault share estimate</span><strong>${units(plan.shares18,18,8)} shares</strong></div>`:''}${!plan.complete?'<p class="form-error">A component price is missing or stale. The full token estimate and funding handoff are paused.</p>':''}`}<p class="radar-note">Reference exposure uses initial weights; component spending accounts for current ask marks. This is not an executable quote. Fees, slippage and ETH gas are extra.</p>`;
+    }else{
+      content=`<div class="radar-metrics">${metric('Components',String(s.rows.length),'2–12 supported tokens')}${metric('Largest initial weight',summary?summary.largestBps/100+'%':'—',summary?summary.largestSymbol:'Complete weights first')}${metric('ETF Stock Tokens',summary?String(summary.etfs):'—','Holdings may overlap')}</div>${t?`<div class="allocation-track" aria-label="Initial allocation">${t.assets.map((a,i)=>`<span style="--allocation:${t.weights[i]};--asset-color:${colors[i%colors.length]}" title="${a} ${t.weights[i]}%"></span>`).join('')}</div>`:'<div class="radar-unbalanced">Finish the allocation to compare weights.</div>'}<div class="radar-component-grid">${s.rows.map((x,i)=>`<span><b>${esc(x.symbol)}</b><em>${esc(x.weight)}%</em></span>`).join('')}</div><p class="radar-note">Token count alone does not measure risk. ETF holdings can overlap. These are initial weights; token quantities become fixed at creation.</p>`;
+    }
+    return `<article class="radar-detail radar-detail-${state.radarMode}">${title}${content}${!state.radarEditing?actions:''}${editor(s)}${state.radarError?`<p id="radar-error" class="form-error" role="alert">${esc(state.radarError)}</p>`:''}</article>`;
+  }
+
+  function render(standalone=false){
+    const selected=selection(),heading=standalone?'h1':'h2';
+    const rows=themes.map(t=>{const r=reference(t);return {t,r,summary:mixSummary(t),perf:performance(t,r)};});
+    if(state.radarMode==='composition')rows.sort((a,b)=>a.summary.largestBps-b.summary.largestBps||a.t.name.localeCompare(b.t.name));
+    else if(state.radarMode==='buy')rows.sort((a,b)=>a.summary.count-b.summary.count||a.t.name.localeCompare(b.t.name));
+    else if(state.radarSource==='market')rows.sort((a,b)=>compareHistorical(a.perf,b.perf,state.radarDirection)||a.t.name.localeCompare(b.t.name));
+    else if(state.radarRange!=='OBSERVED')rows.sort((a,b)=>Number(b.perf.ready)-Number(a.perf.ready)||(b.perf.returnBps??0)-(a.perf.returnBps??0)||a.t.name.localeCompare(b.t.name));
+    const sortLabel=state.radarMode==='composition'?'Largest initial weight, ascending':state.radarMode==='buy'?'Component count, ascending':state.radarSource==='market'?(state.radarRange==='OBSERVED'?'1Y':state.radarRange)+' price return / '+(state.radarDirection==='asc'?'lowest first':'highest first'):state.radarRange==='OBSERVED'?'Individual tracking windows':state.radarRange+' observed return, descending';
+    return `<section id="basket-radar" class="basket-radar"><div class="radar-heading"><div><span class="eyebrow">FIND YOUR NEXT SET</span><${heading}>BASKET RADAR.</${heading}><p>Compare the view. Change the mix. Plan your next step.</p></div><span class="radar-version">3 WAYS TO EXPLORE</span></div><div class="radar-modes" role="group" aria-label="Basket Radar view">${modes.map(([id,name,detail])=>btn(`<b>${name}</b><small>${detail}</small>`,'radar-mode',state.radarMode===id?'active':'',`data-mode="${id}" aria-pressed="${state.radarMode===id}"`)).join('')}</div><div class="radar-workspace"><aside class="radar-list"><div class="radar-list-label">${esc(sortLabel)}</div>${rows.map(({t,summary,perf})=>btn(`${basketMark(t)}<span><b>${esc(t.name)}</b><small>${t.custom?'Your mix / ':''}${summary.count} components</small></span><strong>${state.radarMode==='composition'?summary.largestBps/100+'%':state.radarMode==='buy'?summary.count+' tokens':pct(perf.returnBps)}</strong>`,'radar-select',t.id===selected.base.id?'active':'',`data-id="${t.id}" aria-label="Compare ${esc(t.name)}" aria-pressed="${t.id===selected.base.id}"`)).join('')}<p>${state.radarMode==='composition'?'Token allocation only. ETF exposure can overlap.':state.radarMode==='buy'?'Component count is not a transaction count or a liquidity guarantee.':'Missing history stays unranked. No annual performance is fabricated.'}</p></aside>${panel(selected)}</div></section>`;
+  }
+  return {render,selection};
+}

@@ -1,0 +1,15 @@
+node_modules
+dist/
+.generated/
+.local/
+.openai/
+.env
+.env.*
+!.env.example
+*.log
+*.sqlite*
+*.db
+web/*.bundle.js
+web/chain/
+.DS_Store
+artifacts/
