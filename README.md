@@ -1,6 +1,16 @@
 # HOODSET
 
-## Current release: free history and Vercel (2.11)
+## Atomic basket execution (2.12)
+
+The new HoodsetBasketRouter combines component purchases with minting into one transaction, and combines redemption with all component sales into one transaction. Initial exact USDG, contributed-token and share approvals remain separate. The current deployed vault runtime is pinned and unchanged; deployment of this helper is an explicit user-confirmed ETH gas transaction. No helper mainnet deployment is claimed by the source. Import/deploy in the Batch view verifies the exact compiled runtime.
+
+Interrupted individual purchases can migrate using their independently verified receipt ledger. The helper pulls only the remaining budget and previously acquired component quantities, then refunds unused assets. The old run is archived only after the batch mint receipt and all transfers verify. A failed swap, changed redemption quantity or unmet minimum reverts the execution; gas may still be charged. Prior donations to the helper are isolated and there is no owner, upgrade or sweep authority.
+
+When OpenOcean omits pool price impact, the batch flow can check execution-value deviation against a fresh matching RH bid/ask instead, capped at 5% in either direction. This is explicitly labelled RH reference deviation, assumes USDG = USD1, and includes spread/fees; it is not asserted to be pool-only price impact. Missing/stale marks still block. Per-swap minimums, aggregate minimum shares/USDG, calldata validation and transaction simulation apply independently.
+
+Local EVM tests cover a seven-component round trip, resumed inventory, 12-component baskets, rollback, min bounds, transfer/recipient violations, residual approvals, reserves, donations and reentrancy. These are not an independent audit or evidence of a completed funded mainnet batch.
+
+## Previous release: free history and Vercel (2.11)
 
 The primary deployment now targets a separate HOODSET project on Vercel. Earlier version sections below are a historical changelog; their Twelve Data and Sites setup instructions are superseded by this release. `npm run build:vercel` builds the same wallet interface into static CDN assets and Node.js API functions. Root HTML metadata follows the current host. Deploy from an explicitly linked HOODSET checkout; do not reuse another project's `.vercel` configuration. `RH_RPC_URL` is optional; the market-data integration needs no API key.
 

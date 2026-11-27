@@ -20,7 +20,9 @@ export function openOceanInput(input) {
   uint(input.amount);
   const slippageBps = Number(input.slippageBps ?? 100);
   if (!Number.isInteger(slippageBps) || slippageBps < 10 || slippageBps > 300) throw Error('Slippage must be from 0.10% to 3%.');
-  return { chainId: 4663, taker: input.taker.toLowerCase(), symbol: input.symbol, side: input.side, sellToken: input.side === 'buy' ? USDG : ALLOWED[input.symbol], buyToken: input.side === 'buy' ? ALLOWED[input.symbol] : USDG, sellDecimals: input.side === 'buy' ? 6 : 18, buyDecimals: input.side === 'buy' ? 18 : 6, sellAmount: String(input.amount), slippageBps };
+  let reference;
+  if(input.reference){const r=input.reference,age=Date.now()-Date.parse(r.at);if(r.symbol!==input.symbol||!Number.isFinite(age)||age>120000||age< -60000)throw Error('Fresh matching RH reference required.');const bid=uint(r.bid18),ask=uint(r.ask18),usdG=uint(r.usdgUSD18);if(ask<bid)throw Error('Invalid RH reference spread.');reference={symbol:r.symbol,at:r.at,bid18:String(bid),ask18:String(ask),usdgUSD18:String(usdG)};}
+  return { ...(reference?{reference}:{}), chainId: 4663, taker: input.taker.toLowerCase(), symbol: input.symbol, side: input.side, sellToken: input.side === 'buy' ? USDG : ALLOWED[input.symbol], buyToken: input.side === 'buy' ? ALLOWED[input.symbol] : USDG, sellDecimals: input.side === 'buy' ? 6 : 18, buyDecimals: input.side === 'buy' ? 18 : 6, sellAmount: String(input.amount), slippageBps };
 }
 
 export function validateOpenOcean(result, params, now = Date.now()) {
@@ -32,7 +34,15 @@ export function validateOpenOcean(result, params, now = Date.now()) {
   const grossOutput = uint(d.outAmount), minOutput = uint(d.minOutAmount);
   // Public fees can be up to 0.5%; the minimum must still respect the user's slippage budget.
   if (minOutput > grossOutput || minOutput < grossOutput * BigInt(10000 - params.slippageBps - 50) / 10000n) throw Error('Minimum output exceeds the allowed fee/slippage bounds.');
-  const impact = String(d.price_impact ?? '');
+  let impact = String(d.price_impact ?? ''),impactSource='OpenOcean';
+  if(!impact&&params.reference){
+    const r=params.reference,age=now-Date.parse(r.at);if(!Number.isFinite(age)||age>120000||age< -60000)throw Error('RH reference is stale.');
+    const buy=params.sellDecimals===6,stockAmount=buy?grossOutput:BigInt(params.sellAmount),stableAmount=buy?BigInt(params.sellAmount):grossOutput;
+    const stockValue=stockAmount*BigInt(buy?r.ask18:r.bid18)/10n**18n,stableValue=stableAmount*10n**12n*BigInt(r.usdgUSD18)/10n**18n;
+    const input=buy?stableValue:stockValue,output=buy?stockValue:stableValue,diff=output-input,absolute=diff<0n?-diff:diff;
+    if(input<=0n||output<=0n||absolute*10000n>input*500n)throw Error('Execution differs from the fresh RH reference by more than 5%.');
+    impact=(Number(diff*10000n/input)/100).toFixed(2)+'%';impactSource='RH reference deviation';
+  }
   if (!/^[+-]?[0-9]+(?:\.[0-9]+)?%$/.test(impact) || Math.abs(Number(impact.slice(0, -1))) > 5) throw Error('Price impact is unavailable or exceeds 5%. Reduce the trade size.');
   if (!/^0x(?:[0-9a-fA-F]{2}){4,50000}$/.test(d.data || '')) throw Error('Invalid swap calldata.');
   let decoded;
@@ -47,12 +57,13 @@ export function validateOpenOcean(result, params, now = Date.now()) {
   if (!Number.isSafeInteger(deadline) || deadline < 0) throw Error('Invalid quote deadline.');
   const expiresAt = Math.min(now + 30000, deadline ? deadline * 1000 - 2000 : Infinity);
   if (expiresAt <= now + 3000) throw Error('Quote already expired. Request a fresh route.');
-  return { provider: 'OpenOcean', chainId: 4663, taker: params.taker, recipient: params.taker, symbol: params.symbol, side: params.side, sellToken: params.sellToken, buyToken: params.buyToken, sellAmount: params.sellAmount, spendingCap: params.sellAmount, grossBuyAmount: String(grossOutput), minBuyAmount: String(minOutput), approvalSpender: OPENOCEAN_ROUTER, transaction: { to: OPENOCEAN_ROUTER, data: d.data, value: '0' }, priceImpact: impact, maxProviderFeeBps: 50, slippageBps: params.slippageBps, requestedAt: now, expiresAt };
+  return { provider: 'OpenOcean', chainId: 4663, taker: params.taker, recipient: params.taker, symbol: params.symbol, side: params.side, sellToken: params.sellToken, buyToken: params.buyToken, sellAmount: params.sellAmount, spendingCap: params.sellAmount, grossBuyAmount: String(grossOutput), minBuyAmount: String(minOutput), approvalSpender: OPENOCEAN_ROUTER, transaction: { to: OPENOCEAN_ROUTER, data: d.data, value: '0' }, priceImpact: impact, priceImpactSource:impactSource, ...(params.reference?{priceReference:params.reference}:{}), maxProviderFeeBps: 50, slippageBps: params.slippageBps, requestedAt: now, expiresAt };
 }
 
 export function reviewOpenOcean(q, input, now = Date.now()) {
   const p = openOceanInput(input);
   if (!q || !Number.isSafeInteger(q.requestedAt) || !Number.isSafeInteger(q.expiresAt) || !same(q.recipient,p.taker) || q.provider !== 'OpenOcean' || q.expiresAt <= now || q.expiresAt > q.requestedAt + 30000 || q.requestedAt > now + 1000 || !same(q.approvalSpender, OPENOCEAN_ROUTER) || String(q.spendingCap) !== p.sellAmount || q.symbol !== p.symbol || q.side !== p.side || q.slippageBps !== p.slippageBps) throw Error('Request a fresh quote for this wallet and amount.');
-  validateOpenOcean({ code: 200, data: { chainId: q.chainId, from: q.taker, to: q.transaction?.to, inToken: { address: q.sellToken, decimals: p.sellDecimals }, outToken: { address: q.buyToken, decimals: p.buyDecimals }, inAmount: q.sellAmount, outAmount: q.grossBuyAmount, minOutAmount: q.minBuyAmount, value: q.transaction?.value, data: q.transaction?.data, price_impact: q.priceImpact } }, p, now);
+  const normalized=validateOpenOcean({ code: 200, data: { chainId: q.chainId, from: q.taker, to: q.transaction?.to, inToken: { address: q.sellToken, decimals: p.sellDecimals }, outToken: { address: q.buyToken, decimals: p.buyDecimals }, inAmount: q.sellAmount, outAmount: q.grossBuyAmount, minOutAmount: q.minBuyAmount, value: q.transaction?.value, data: q.transaction?.data, price_impact: q.priceImpactSource==='RH reference deviation'?undefined:q.priceImpact } }, p, now);
+  if(normalized.priceImpact!==q.priceImpact||(q.priceImpactSource||'OpenOcean')!==normalized.priceImpactSource)throw Error('Price protection source changed.');
   return q;
 }
