@@ -1,5 +1,9 @@
 # HOODSET
 
+## Encrypted Drafts (2.15)
+
+[Password-protected draft links](https://hoodset.space/#encrypted) encrypt the basket composition in the browser with AES-256-GCM and PBKDF2-SHA256. Recipients unlock, preview and explicitly import a draft; no wallet or transaction is needed. Only shared link payloads are encrypted. Local working drafts remain plaintext, and deployed vaults and transactions remain public. [Format, threat model and limitations](docs/encrypted-drafts.md).
+
 ## Current mainnet deployment
 
 HOODSET is live at https://hoodset.space on Robinhood Chain mainnet (4663). Users define Stock Token baskets, inspect vault backing, fund and mint with USDG, and redeem and sell through wallet-confirmed batch execution. Initial token permissions are separate. Basket share tokens are separate from project token $HSET.
