@@ -1,5 +1,9 @@
 # HOODSET
 
+## Spreads and stock-token pairs (2.18.0)
+
+[Spreads & execution](https://hoodset.space/#spreads) separates multiplier-adjusted RH reference bid/ask from independent OpenOcean buy/sell snapshots. Search and sort supported tokens, inspect a selected input amount, and calculate a complete starting-mix reference spread. [Pairs](https://hoodset.space/#pairs) adds aligned underlying daily-close ratios, return gaps, descriptive z-scores/correlation and a wallet-reviewed **spot exchange of already owned Stock Tokens**. It does not open borrowed or leveraged long/short positions. Exact allowances, fresh dual-token references, decoded routes, minimum output, simulation, expired-review refresh and a recoverable local transaction journal apply. [Definitions and execution boundaries](docs/spreads-pairs.md).
+
 ## Stress test and HSET holder library (2.17.0)
 
 [Stress test](https://hoodset.space/#stress) models explicit component price shocks against a selected starting mix, with cent-reconciled contributions, concentration and effective token count. Interactive analysis is open to everyone. Holding at least 1 HSET in the connected RH mainnet wallet enables up to 12 browser-local saved scenarios and an outcome comparison table. The app verifies the pinned HSET contract and same-block balance without a transfer or approval. This is not background monitoring, a live-position risk estimate or server-enforced private storage. [Calculation and access details](docs/stress-test.md).
