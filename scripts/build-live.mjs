@@ -1,5 +1,6 @@
 import{gzipSync}from'node:zlib';import fs from'node:fs';import path from'node:path';import{execFileSync}from'node:child_process';import{build}from'esbuild';
 execFileSync(process.execPath,['scripts/compile-contracts.mjs'],{stdio:'inherit'});
+execFileSync(process.execPath,['scripts/compile-stock-rewards.mjs'],{stdio:'inherit'});
 await build({entryPoints:['client/live.js'],outfile:'web/live.bundle.js',bundle:true,minify:true,format:'esm',platform:'browser',target:'es2022',legalComments:'eof'});
 await build({entryPoints:['client/diagnostics.js'],outfile:'web/diagnostics.bundle.js',bundle:true,minify:true,format:'esm',platform:'browser',target:'es2022',legalComments:'eof'});
 const assets={};const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.ttf':'font/ttf','.woff2':'font/woff2','.sol':'text/plain; charset=utf-8'};

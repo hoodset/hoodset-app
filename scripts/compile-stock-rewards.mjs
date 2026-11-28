@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import solc from 'solc';
+import {keccak256} from 'ethers';
+import {compile} from './compile-contracts.mjs';
+const {output,input}=compile({'contracts/HoodsetStockRewards.sol':{content:fs.readFileSync('contracts/HoodsetStockRewards.sol','utf8')}});
+const c=output.contracts['contracts/HoodsetStockRewards.sol'].HoodsetStockRewards;
+const artifact={contractName:'HoodsetStockRewards',version:1,compiler:solc.version(),abi:c.abi,bytecode:'0x'+c.evm.bytecode.object,runtimeHash:keccak256('0x'+c.evm.deployedBytecode.object),runtimeBytes:c.evm.deployedBytecode.object.length/2,sourceUrl:'/chain/HoodsetStockRewards.sol',independentAudit:false};
+fs.mkdirSync('web/chain',{recursive:true});
+fs.writeFileSync('web/chain/stock-rewards.json',JSON.stringify(artifact));
+fs.writeFileSync('web/chain/stock-rewards-standard-input.json',JSON.stringify(input));
+fs.copyFileSync('contracts/HoodsetStockRewards.sol','web/chain/HoodsetStockRewards.sol');
+console.log(JSON.stringify({stockRewardsRuntimeHash:artifact.runtimeHash,stockRewardsRuntimeBytes:artifact.runtimeBytes}));

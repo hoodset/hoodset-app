@@ -1,5 +1,9 @@
 # HOODSET
 
+## HSET Stock Rewards (2.20.0)
+
+[Stock Rewards](https://www.hoodset.space/#rewards) adds an optional, separate HSET participation contract with independently claimable, actually funded canonical Stock Tokens. HSET principal has no minimum lock period; accrued rewards survive exit. Seven-day finite-funded cycles use time-weighted participation, queued top-ups and empty-period carry. No owner, upgrades, sweep, fixed APY or automatic claim on basket backing. Source, exact permissions, simulated wallet reviews and recoverable transaction intents are included. A null pool in `web/data/stock-rewards.json` means no official mainnet pool has been published; deployment and real funding require wallet confirmation. Direct contributions are not automatically described as protocol fees. [Accounting, source-of-funds and rollout details](docs/stock-rewards.md).
+
 ## HSET-funded API & MCP (2.19.0)
 
 [API & MCP](https://www.hoodset.space/#agents) exposes six read-only tools for verified vault backing, actual observations, retrospective mix/SPY analysis, mix comparison and fresh RH reference spreads. Wallet-signed API keys share a persistent account ledger. The published package is 100,000 HSET for 1,000 successful requests, with no credit expiry. A payment is credited once after exact canonical-token/recipient/receipt checks and 20 RH block confirmations. No agent can sign trades or access encrypted drafts. Errors refund reserved credits; explicit idempotency keys replay successful requests without another charge for 24 hours. Free site features remain available. [Payment, billing, protocol and data details](docs/agent-api.md).

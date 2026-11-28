@@ -7,7 +7,7 @@ export function transactionKey(tx) {
 export async function checkWalletQueue(activity, plans, account, runId, getReceipt) {
   if(plans.some(p=>p?.account===account&&p.id!==runId&&p.intent))throw Error('Another basket operation has an unknown wallet outcome. Recover it before continuing.');
   for(const row of activity){
-    if(row.account!==account||row.status!=='Submitted'||(row.recovery?.exit||row.recovery?.fund)===runId)continue;
+    if(row.account!==account||row.status!=='Submitted'||(runId!==undefined&&(row.recovery?.exit||row.recovery?.fund)===runId))continue;
     if(!await getReceipt(row.hash))throw Error('Another wallet transaction is still pending. Resolve it before continuing this basket operation.');
   }
 }
