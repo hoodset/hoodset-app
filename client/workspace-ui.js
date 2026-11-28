@@ -10,7 +10,7 @@ import { ALLOWED } from '../worker/assets.js';
 export function createWorkspaceUI(ctx) {
   const { state, saved, themes, esc, btn, badge, icon, save, p } = ctx;
   const colors = ['#dfff56', '#a788da', '#c0c9b7', '#d7c7a9', '#b4c4cc'];
-  const navItems = [['discover','Discover'],['radar','Basket Radar'],['spreads','Spreads & execution'],['pairs','Pairs'],['portfolio','My portfolio'],['rewards','HSET Stock Rewards'],['onchain','Onchain baskets'],['catalogue','Community baskets'],['watchlist','Watchlist'],['sectors','Sector coverage'],['tokens','Token universe'],['community','Create a basket'],['encrypted','Encrypted drafts'],['methodology','Methodology'],['agents','API & MCP'],['data','Data & network']];
+  const navItems = [['discover','Discover'],['radar','Basket Radar'],['spreads','Spreads & execution'],['pairs','Pairs'],['portfolio','My portfolio'],['onchain','Onchain baskets'],['catalogue','Community baskets'],['watchlist','Watchlist'],['sectors','Sector coverage'],['tokens','Token universe'],['community','Create a basket'],['encrypted','Encrypted drafts'],['methodology','Methodology'],['agents','API & MCP'],['data','Data & network']];
   const tokenName = s => (state.assets.find(a => a.tokenSymbol === s)?.tokenName || s).replace(' • Robinhood Token', '');
   const time = at => new Date(at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
   const basketMark = t => `<span class="set-emblem" aria-hidden="true"><img src="/assets/baskets/${t.iconId||t.id}.png" alt="" width="128" height="128" decoding="async"></span>`;

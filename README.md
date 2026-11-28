@@ -1,9 +1,5 @@
 # HOODSET
 
-## HSET Stock Rewards (2.20.0)
-
-[Stock Rewards](https://www.hoodset.space/#rewards) adds an optional, separate HSET participation contract with independently claimable, actually funded canonical Stock Tokens. HSET principal has no minimum lock period; accrued rewards survive exit. Seven-day finite-funded cycles use time-weighted participation, queued top-ups and empty-period carry. No owner, upgrades, sweep, fixed APY or automatic claim on basket backing. Source, exact permissions, simulated wallet reviews and recoverable transaction intents are included. A null pool in `web/data/stock-rewards.json` means no official mainnet pool has been published; deployment and real funding require wallet confirmation. Direct contributions are not automatically described as protocol fees. [Accounting, source-of-funds and rollout details](docs/stock-rewards.md).
-
 ## HSET-funded API & MCP (2.19.0)
 
 [API & MCP](https://www.hoodset.space/#agents) exposes six read-only tools for verified vault backing, actual observations, retrospective mix/SPY analysis, mix comparison and fresh RH reference spreads. Wallet-signed API keys share a persistent account ledger. The published package is 100,000 HSET for 1,000 successful requests, with no credit expiry. A payment is credited once after exact canonical-token/recipient/receipt checks and 20 RH block confirmations. No agent can sign trades or access encrypted drafts. Errors refund reserved credits; explicit idempotency keys replay successful requests without another charge for 24 hours. Free site features remain available. [Payment, billing, protocol and data details](docs/agent-api.md).
@@ -264,3 +260,7 @@ The existing Site is public. Twelve Data Basic was confirmed by the builder on N
 The read-only mainnet check on November 27 returned validated NVDA buy and sell routes. The existing connected wallet's basket check at 5 USDG stopped for insufficient USDG before swaps. This is not a funded round trip. Before the wallet test, fund the same wallet with the agreed USDG budget plus ETH for gas, then use the existing vault's Buy basket with USDG flow. The user confirms every transaction; sell only shares from the completed test and inspect all receipts.
 
 A domain is not attached yet. Add the actual purchased domain through Sites, use the exact DNS validation/routing records returned for it, then validate HTTPS and the anonymous root/API/social-image responses. Do not guess records or use another project's hosting target. Browser-local drafts, watchlists and transaction progress belong to the old origin: complete outstanding operations on that origin and keep it accessible. Onchain balances and vault addresses are independent of the domain; import the same vault address on the new host.
+
+## Deferred Stock Rewards experiment
+
+The Stock Rewards interface and deployment controls are disabled in 2.20.1 at the project owner’s request. Old `#rewards` links return to Discover. Contract and accounting source are retained for review only; no official rewards pool was deployed or funded.

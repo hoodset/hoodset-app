@@ -1,6 +1,6 @@
 # HSET Stock Rewards
 
-Stock Rewards is a separate optional participation contract, not a basket vault and not a change to HSET's token contract. The interface is at `https://www.hoodset.space/#rewards`. The published pool address, if deployed, is in `web/data/stock-rewards.json`; a null address means no official pool has been published. Do not infer a mainnet deployment, funded rewards or completed mainnet test from source publication alone.
+Stock Rewards is a separate optional participation contract, not a basket vault and not a change to HSET's token contract. The interface and deployment controls are disabled in 2.20.1; `#rewards` redirects to Discover. This is retained implementation documentation, not an active rewards launch. The published pool address, if deployed, is in `web/data/stock-rewards.json`; a null address means no official pool has been published. Do not infer a mainnet deployment, funded rewards or completed mainnet test from source publication alone.
 
 ## Principal and rewards
 
