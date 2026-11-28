@@ -4,6 +4,7 @@ import{ASSETS}from'../.generated/assets.js';
 export default{async fetch(request,env,ctx){
   try{
     const url=new URL(request.url),publication=publicationFile(request);
+    if(url.pathname==='/mcp'){url.pathname='/api/agent-mcp';return api(new Request(url,request),env||{});}
     if(publication)return publication;
     if(url.pathname.startsWith('/api/')){
       if(request.method!=='GET'&&request.method!=='POST')return json({error:'Method not allowed.'},405);

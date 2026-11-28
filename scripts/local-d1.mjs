@@ -18,8 +18,10 @@ export function localD1(file=':memory:'){
       bind(...values){params=values;return this;},
       async first(column){const row=statement.get(...params)||null;return column&&row?row[column]:row;},
       async run(){return{success:true,meta:statement.run(...params),results:[]};},
-      async all(){return{success:true,results:statement.all(...params)};}
+      async all(){return{success:true,results:statement.all(...params)};},
+      _batch(){return {success:true,results:statement.columns().length?statement.all(...params):[],meta:statement.columns().length?{}:statement.run(...params)};}
     };},
+    async batch(statements){sqlite.exec('BEGIN IMMEDIATE');try{const results=statements.map(s=>s._batch());sqlite.exec('COMMIT');return results;}catch(e){sqlite.exec('ROLLBACK');throw e;}},
     withSession(){return db;},
     close(){sqlite.close();}
   };

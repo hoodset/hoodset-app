@@ -1,5 +1,9 @@
 # HOODSET
 
+## HSET-funded API & MCP (2.19.0)
+
+[API & MCP](https://www.hoodset.space/#agents) exposes six read-only tools for verified vault backing, actual observations, retrospective mix/SPY analysis, mix comparison and fresh RH reference spreads. Wallet-signed API keys share a persistent account ledger. The published package is 100,000 HSET for 1,000 successful requests, with no credit expiry. A payment is credited once after exact canonical-token/recipient/receipt checks and 20 RH block confirmations. No agent can sign trades or access encrypted drafts. Errors refund reserved credits; explicit idempotency keys replay successful requests without another charge for 24 hours. Free site features remain available. [Payment, billing, protocol and data details](docs/agent-api.md).
+
 ## Spreads and stock-token pairs (2.18.0)
 
 [Spreads & execution](https://hoodset.space/#spreads) separates multiplier-adjusted RH reference bid/ask from independent OpenOcean buy/sell snapshots. Search and sort supported tokens, inspect a selected input amount, and calculate a complete starting-mix reference spread. [Pairs](https://hoodset.space/#pairs) adds aligned underlying daily-close ratios, return gaps, descriptive z-scores/correlation and a wallet-reviewed **spot exchange of already owned Stock Tokens**. It does not open borrowed or leveraged long/short positions. Exact allowances, fresh dual-token references, decoded routes, minimum output, simulation, expired-review refresh and a recoverable local transaction journal apply. [Definitions and execution boundaries](docs/spreads-pairs.md).

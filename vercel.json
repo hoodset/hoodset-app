@@ -8,6 +8,7 @@
     "api/**/*.js": {"maxDuration": 180, "includeFiles": "web/index.html"}
   },
   "rewrites": [
+    {"source": "/mcp", "destination": "/api/mcp"},
     {"source": "/", "destination": "/api/render"},
     {"source": "/robots.txt", "destination": "/api/robots"},
     {"source": "/sitemap.xml", "destination": "/api/sitemap"}
