@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import solc from 'solc';
+import {keccak256} from 'ethers';
+import {compile} from './compile-contracts.mjs';
+const {output,input}=compile({'contracts/HoodsetLadderOrders.sol':{content:fs.readFileSync('contracts/HoodsetLadderOrders.sol','utf8')}});
+const c=output.contracts['contracts/HoodsetLadderOrders.sol'].HoodsetLadderOrders;
+const artifact={contractName:'HoodsetLadderOrders',version:1,compiler:solc.version(),abi:c.abi,bytecode:'0x'+c.evm.bytecode.object,runtimeHash:keccak256('0x'+c.evm.deployedBytecode.object),runtimeBytes:c.evm.deployedBytecode.object.length/2,sourceUrl:'/chain/HoodsetLadderOrders.sol',independentAudit:false};
+fs.mkdirSync('web/chain',{recursive:true});
+fs.writeFileSync('web/chain/ladder-orders.json',JSON.stringify(artifact));
+fs.writeFileSync('web/chain/ladder-orders-standard-input.json',JSON.stringify(input));
+fs.copyFileSync('contracts/HoodsetLadderOrders.sol','web/chain/HoodsetLadderOrders.sol');
+console.log(JSON.stringify({ladderOrdersRuntimeHash:artifact.runtimeHash,ladderOrdersRuntimeBytes:artifact.runtimeBytes}));

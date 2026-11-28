@@ -264,3 +264,7 @@ A domain is not attached yet. Add the actual purchased domain through Sites, use
 ## Deferred Stock Rewards experiment
 
 The Stock Rewards interface and deployment controls are disabled in 2.20.1 at the project owner’s request. Old `#rewards` links return to Discover. Contract and accounting source are retained for review only; no official rewards pool was deployed or funded.
+
+### Ladder orders (2.21.0)
+
+The new `/#orders` editor supports 1–8 buy levels, a full-position exit above actual acquisition cost, bounded repetition, expiry and saved plans. The separate escrow contract, wallet recovery and permissionless executor are included with EVM tests. **Mainnet execution is not activated**: no order engine is deployed, no executor is running and no HSET tariff is collecting payments. [Implementation, exact accounting and activation requirements](docs/ladder-orders.md).

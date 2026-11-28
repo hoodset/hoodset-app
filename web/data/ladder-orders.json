@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "chainId": 4663,
+  "engine": null,
+  "deploymentBlock": null,
+  "executorActive": false,
+  "markets": [],
+  "protocolFeeBps": 0,
+  "note": "Planning is available. Mainnet execution needs a deployed verified engine, verified Chainlink token feeds and an operational executor. No HSET tariff is enabled.",
+  "servicePayment": {
+    "token": "0x2c94879c2b482d1838ccce3cd00ffd96a82fbcb8",
+    "symbol": "HSET",
+    "decimals": 18,
+    "status": "tariff-pending",
+    "price": null,
+    "recipient": null
+  }
+}

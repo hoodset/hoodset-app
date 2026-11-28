@@ -1,0 +1,21 @@
+{
+ "checkedOn":"2026-11-28",
+ "source":"https://docs.chain.link/data-feeds/tokenized-equity-feeds/robinhood",
+ "chainId":4663,
+ "proxyType":"Shared SVR",
+ "note":"Catalog addresses, not evidence of a fresh round. Recheck source, onchain decimals, description, timestamps and consumer access before deployment.",
+ "feeds":[
+  {"symbol":"AAPL","feed":"0x4bDbb3150014c6Ab2C6D9347B0779c49015a2f3f","decimals":8,"heartbeat":86400},
+  {"symbol":"AMD","feed":"0xF6d57763DFa625F4A413485261Ab2E71Ff4304CF","decimals":8,"heartbeat":86400},
+  {"symbol":"AMZN","feed":"0x9244830430bC7D9C9A48dd47603F24AD61f7c56e","decimals":8,"heartbeat":86400},
+  {"symbol":"COIN","feed":"0xA7F7D79D578fb007384BaDF42c8E1D76a6a63bBD","decimals":8,"heartbeat":86400},
+  {"symbol":"GOOGL","feed":"0xA04EE5c4c8827F17e82f93bE9e19DeA221A749a8","decimals":8,"heartbeat":86400},
+  {"symbol":"META","feed":"0x5cBC53D382E56cBb223f118CF8Eefb6c9c2759f5","decimals":8,"heartbeat":86400},
+  {"symbol":"MSFT","feed":"0xaD6D88eab22aa4867Efe807a5311Ed64962f740D","decimals":8,"heartbeat":86400},
+  {"symbol":"NVDA","feed":"0xCF169363636D73dbBf77733629CB38919d14232d","decimals":8,"heartbeat":86400},
+  {"symbol":"PLTR","feed":"0x8cd1DFC0fc61fcA55FA77b37e008A90f13364Fce","decimals":8,"heartbeat":86400},
+  {"symbol":"QQQ","feed":"0x41ed2c58611790af0760e31e80Bb427e4e83D603","decimals":8,"heartbeat":86400},
+  {"symbol":"SPY","feed":"0xa68CA83408bE3f78d1c58a82081c619e9d21486d","decimals":8,"heartbeat":86400},
+  {"symbol":"TSLA","feed":"0xE4479F01738B4e8C428CD8eB72D47AB9BC3c7de6","decimals":8,"heartbeat":86400}
+ ]
+}
